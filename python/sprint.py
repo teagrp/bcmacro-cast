@@ -3,9 +3,7 @@
 
 import sys
 
-total = 0
-count = 0
-elem_list = []
+elem_list = [-2]
 
 def get_cursor_id(cursor, cursor_list = []):
     if cursor is None:
@@ -31,43 +29,54 @@ def get_info(node, depth=0, pid=-1):
                 for c in node.get_children()]
     
 def expression_print(node, depth, num, elem):
-    global total, count
     global elem_list
     level = depth
-    if depth + 1 >= len(elem_list):
-        elem_list.append(elem)
-    else: 
-        elem_list[depth + 1] += elem
-    '''    
-    print depth 
-    print elem_list
-    '''
+    if num > -1:
+        if depth + 1 >= len(elem_list):
+            elem_list.append(elem)
+        else: 
+            elem_list[depth] += elem
+    
     #S-expressionを出力
     if num > -1:
         if elem > 2:
             sys.stdout.write("\n")
-            count = 0
-
+        
         while level > 0:
             sys.stdout.write("　")
             level = level - 1
-
-        total = total + 1
-        count = count + 1
-        sys.stdout.write(str(elem) + "(" + str(node.kind).lstrip("CursorKind.") + "/" + str(node.spelling) + "  ")
-
-        if elem >= 2:
-            count = 0
+            
+        sys.stdout.write("(" + str(content_print(node)))
+        
+        if elem >= 2 and str(node.kind.name) != "COMPOUND_STMT":
             sys.stdout.write("\n")
 
         if elem == 0:
-            total = total - count
-            while count > 0:
-                sys.stdout.write(")")
-                count -= 1
-                
+            sys.stdout.write(")")
+            while elem_list[depth] ==  0:
+                depth -= 1
+                elem_list[depth] -= 1;
+                if elem_list[depth] == 0:
+                    sys.stdout.write(")")
             sys.stdout.write("\n")
             
+    
+def content_print(node):
+    to = node.get_tokens()
+    if str(node.kind.name) == "FUNCTION_DECL":
+        return "Func " + to.next().spelling + " " + node.displayname + " "
+    elif str(node.kind.name) == "DECL_STMT":
+        return "Decl "
+    elif str(node.kind.name) == "VAR_DECL":
+        return "Var " + node.displayname + " " + to.next().spelling + " "
+    elif str(node.kind.name) == "INTEGER_LITERAL":
+        return "Const " + to.next().spelling
+    elif str(node.kind.name) == "COMPOUND_STMT":
+        return ""
+    else:
+        return str(node.kind.name)
+
+
 def main():
     from clang.cindex import Index
 
