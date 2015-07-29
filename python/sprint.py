@@ -18,17 +18,19 @@ def get_cursor_id(cursor, cursor_list = []):
 def get_info(node, depth=0, pid=-1):
     #ID を取得
     idd = get_cursor_id(node)
-
-    #標準出力へ出力
-    elem = [a 
-             for a in node.get_children()]
-    expression_print(node, depth, pid, len(elem))
-
-    #要素の子を取得
-    children = [get_info(c, depth+1, idd)
+    [sys.stdout.write("  ") for i in range(0, depth)]
+    sys.stdout.write("(")
+    expression_print(node)
+    sys.stdout.write("\n")
+    children = [get_info(c, depth+1)
                 for c in node.get_children()]
+    [sys.stdout.write("  ") for i in range(0, depth)]
+    sys.stdout.write(")\n")
+
     
-def expression_print(node, depth, num, elem):
+def expression_print(node):
+    sys.stdout.write(str(content_print(node)))
+    '''
     global elem_list
     level = depth
     if num > -1:
@@ -59,23 +61,41 @@ def expression_print(node, depth, num, elem):
                 if elem_list[depth] == 0:
                     sys.stdout.write(")")
             sys.stdout.write("\n")
-            
+       '''     
     
 def content_print(node):
     to = node.get_tokens()
+    string = ""
     if str(node.kind.name) == "FUNCTION_DECL":
-        return "Func " + to.next().spelling + " " + node.displayname + " "
+        string = string + "Func " + node.get_usr() #str(node.result_type.kind.spelling)
+        if str(node.result_type.kind.spelling) == "Pointer":
+            string =  string.replace("Pointer", "(Pointer")
+            string = string + " (" + str(node.result_type.get_pointee().kind.spelling)
+        if "Unexposed" in string:
+            string =  string.replace("Unexposed", "Record")
+        string = string + " " + node.displayname + " "
     elif str(node.kind.name) == "DECL_STMT":
-        return "Decl "
+        string = string + "Decl "
     elif str(node.kind.name) == "VAR_DECL":
-        return "Var " + node.displayname + " " + to.next().spelling + " "
-    elif str(node.kind.name) == "INTEGER_LITERAL":
-        return "Const " + to.next().spelling
+        string = string + "Var " + node.displayname + " " + str(node.type.kind.spelling) 
+        if str(node.type.kind.spelling) == "Pointer":
+            string = string.replace("Pointer", "(Pointer")
+            string = string + " (" + str(node.type.get_pointee().kind.spelling) + " " 
+        if "Unexposed" in string:
+            string =  string.replace("Unexposed", "Record")
+    elif "LITERAL" in str(node.kind.name):
+        string = string + "Const " + to.next().spelling
     elif str(node.kind.name) == "COMPOUND_STMT":
-        return ""
+        string = string + ""
+    elif str(node.kind.name) == "BINARY_OPERATOR":
+        binary = to.next()
+        string = string + str(node.kind.name) + " "
+    elif str(node.kind.name) == "DECL_REF_EXPR":
+        string = string + str(node.kind.name) + " " + node.spelling
     else:
-        return str(node.kind.name)
+        string = string + str(node.kind.name)
 
+    return string
 
 def main():
     from clang.cindex import Index
