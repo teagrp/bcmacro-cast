@@ -1,0 +1,268 @@
+
+(({Func :kind memcpy :name "void *" :type}
+	{Parm :kind __dest :name "void *restrict" :type}
+	{Parm :kind __src :name "const void *restrict" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind memmove :name "void *" :type}
+	{Parm :kind __dest :name "void *" :type}
+	{Parm :kind __src :name "const void *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind memccpy :name "void *" :type}
+	{Parm :kind __dest :name "void *restrict" :type}
+	{Parm :kind __src :name "const void *restrict" :type}
+	{Parm :kind __c :name "int" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind memset :name "void *" :type}
+	{Parm :kind __s :name "void *" :type}
+	{Parm :kind __c :name "int" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind memcmp :name "int" :type}
+	{Parm :kind __s1 :name "const void *" :type}
+	{Parm :kind __s2 :name "const void *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind memchr :name "void *" :type}
+	{Parm :kind __s :name "const void *" :type}
+	{Parm :kind __c :name "int" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind strcpy :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type})
+ ({Func :kind strncpy :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind strcat :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type})
+ ({Func :kind strncat :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind strcmp :name "int" :type}
+	{Parm :kind __s1 :name "const char *" :type}
+	{Parm :kind __s2 :name "const char *" :type})
+ ({Func :kind strncmp :name "int" :type}
+	{Parm :kind __s1 :name "const char *" :type}
+	{Parm :kind __s2 :name "const char *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind strcoll :name "int" :type}
+	{Parm :kind __s1 :name "const char *" :type}
+	{Parm :kind __s2 :name "const char *" :type})
+ ({Func :kind strxfrm :name "unsigned long" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Struct :kind __locale_struct :name}
+	  ({Struct :kind __locale_data :name})
+	  ({Field :kind __locales :name member :scope "struct __locale_data *(13)" :type}{INT :kind 13 :value})
+	  ({Field :kind __ctype_b :name member :scope "const unsigned short *" :type})
+	  ({Field :kind __ctype_tolower :name member :scope "const int *" :type})
+	  ({Field :kind __ctype_toupper :name member :scope "const int *" :type})
+	  ({Field :kind __names :name member :scope "const char *(13)" :type}{INT :kind 13 :value}))
+ ({Func :kind strcoll_l :name "int" :type}
+	{Parm :kind __s1 :name "const char *" :type}
+	{Parm :kind __s2 :name "const char *" :type}
+	{Parm :kind __l :name "__locale_t" :type})
+ ({Func :kind strxfrm_l :name "size_t" :type}
+	{Parm :kind __dest :name "char *" :type}
+	{Parm :kind __src :name "const char *" :type}
+	{Parm :kind __n :name "size_t" :type}
+	{Parm :kind __l :name "__locale_t" :type})
+ ({Func :kind strdup :name "char *" :type}
+	{Parm :kind __s :name "const char *" :type})
+ ({Func :kind strndup :name "char *" :type}
+	{Parm :kind __string :name "const char *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind strchr :name "char *" :type}
+	{Parm :kind __s :name "const char *" :type}
+	{Parm :kind __c :name "int" :type})
+ ({Func :kind strrchr :name "char *" :type}
+	{Parm :kind __s :name "const char *" :type}
+	{Parm :kind __c :name "int" :type})
+ ({Func :kind strcspn :name "unsigned long" :type}
+	{Parm :kind __s :name "const char *" :type}
+	{Parm :kind __reject :name "const char *" :type})
+ ({Func :kind strspn :name "unsigned long" :type}
+	{Parm :kind __s :name "const char *" :type}
+	{Parm :kind __accept :name "const char *" :type})
+ ({Func :kind strpbrk :name "char *" :type}
+	{Parm :kind __s :name "const char *" :type}
+	{Parm :kind __accept :name "const char *" :type})
+ ({Func :kind strstr :name "char *" :type}
+	{Parm :kind __haystack :name "const char *" :type}
+	{Parm :kind __needle :name "const char *" :type})
+ ({Func :kind strtok :name "char *" :type}
+	{Parm :kind __s :name "char *restrict" :type}
+	{Parm :kind __delim :name "const char *restrict" :type})
+ ({Func :kind __strtok_r :name "char *" :type}
+	{Parm :kind __s :name "char *restrict" :type}
+	{Parm :kind __delim :name "const char *restrict" :type}
+	{Parm :kind __save_ptr :name "char **restrict" :type})
+ ({Func :kind strtok_r :name "char *" :type}
+	{Parm :kind __s :name "char *restrict" :type}
+	{Parm :kind __delim :name "const char *restrict" :type}
+	{Parm :kind __save_ptr :name "char **restrict" :type})
+ ({Func :kind strlen :name "unsigned long" :type}
+	{Parm :kind __s :name "const char *" :type})
+ ({Func :kind strnlen :name "size_t" :type}
+	{Parm :kind __string :name "const char *" :type}
+	{Parm :kind __maxlen :name "size_t" :type})
+ ({Func :kind strerror :name "char *" :type}
+	{Parm :kind __errnum :name "int" :type})
+ ({Func :kind strerror_r :name "int" :type}
+	{Parm :kind __errnum :name "int" :type}
+	{Parm :kind __buf :name "char *" :type}
+	{Parm :kind __buflen :name "size_t" :type})
+ ({Func :kind strerror_l :name "char *" :type}
+	{Parm :kind __errnum :name "int" :type}
+	{Parm :kind __l :name "__locale_t" :type})
+ ({Func :kind __bzero :name "void" :type}
+	{Parm :kind __s :name "void *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind bcopy :name "void" :type}
+	{Parm :kind __src :name "const void *" :type}
+	{Parm :kind __dest :name "void *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind bzero :name "void" :type}
+	{Parm :kind __s :name "void *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind bcmp :name "int" :type}
+	{Parm :kind __s1 :name "const void *" :type}
+	{Parm :kind __s2 :name "const void *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind index :name "char *" :type}
+	{Parm :kind __s :name "const char *" :type}
+	{Parm :kind __c :name "int" :type})
+ ({Func :kind rindex :name "char *" :type}
+	{Parm :kind __s :name "const char *" :type}
+	{Parm :kind __c :name "int" :type})
+ ({Func :kind ffs :name "int" :type}
+	{Parm :kind __i :name "int" :type})
+ ({Func :kind strcasecmp :name "int" :type}
+	{Parm :kind __s1 :name "const char *" :type}
+	{Parm :kind __s2 :name "const char *" :type})
+ ({Func :kind strncasecmp :name "int" :type}
+	{Parm :kind __s1 :name "const char *" :type}
+	{Parm :kind __s2 :name "const char *" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind strsep :name "char *" :type}
+	{Parm :kind __stringp :name "char **restrict" :type}
+	{Parm :kind __delim :name "const char *restrict" :type})
+ ({Func :kind strsignal :name "char *" :type}
+	{Parm :kind __sig :name "int" :type})
+ ({Func :kind __stpcpy :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type})
+ ({Func :kind stpcpy :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type})
+ ({Func :kind __stpncpy :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind stpncpy :name "char *" :type}
+	{Parm :kind __dest :name "char *restrict" :type}
+	{Parm :kind __src :name "const char *restrict" :type}
+	{Parm :kind __n :name "size_t" :type})
+ ({Func :kind escape_absolute_uri :name "void" :type}
+	{Parm :kind uri :name "char *" :type}
+	{Parm :kind scheme :name "int" :type}
+	({Var :kind cp :name local :scope "int" :type})
+	({Var :kind c :name local :scope "int" :type})
+	({Var :kind token :name local :scope "char *(11)" :type}
+	      ({Binop :kind + :op}{INT :kind 10 :value}{INT :kind 1 :value}))
+	({If :kind}
+	     ({Binop :kind || :op}
+		     ({Binop :kind == :op}
+			     ({DRE :kind scheme :name local :scope "int" :type}){INT :kind 0 :value})
+		     ({Binop :kind < :op}
+			     (({DRE :kind strlen :name "unsigned long (const char *}" :type})
+			      ({DRE :kind uri :name local :scope "char *" :type}))
+			     ({DRE :kind scheme :name local :scope "int" :type})))
+	     ({Ret :kind "void" :type}))
+	({Binop :kind = :op}
+		({DRE :kind cp :name local :scope "int" :type})
+		({DRE :kind scheme :name local :scope "int" :type}))
+	({If :kind}
+	     ({Binop :kind == :op}
+		     ({DRE :kind uri :name local :scope "char *" :type})
+		     ({Binop :kind - :op}
+			     ({DRE :kind cp :name local :scope "int" :type}){INT :kind 1 :value}){CHAR :kind / :value})
+	     ({While :kind}
+		     ({Binop :kind && :op}
+			     ({Binop :kind != :op}
+				     ({DRE :kind uri :name local :scope "char *" :type})
+				     ({DRE :kind cp :name local :scope "int" :type})
+				     {CHAR :kind   :value})
+			     ({Binop :kind != :op}
+				     ({DRE :kind uri :name local :scope "char *" :type})
+				     ({DRE :kind cp :name local :scope "int" :type})
+				     {CHAR :kind / :value}))
+		     ({Unop :kind ++ :op}
+			    ({DRE :kind cp :name local :scope "int" :type})))
+	     ({If :kind}
+		  ({Binop :kind || :op}
+			  ({Binop :kind == :op}
+				  ({DRE :kind uri :name local :scope "char *" :type})
+				  ({DRE :kind cp :name local :scope "int" :type}){CHAR :kind   :value})
+			  ({Binop :kind == :op}
+				  ({DRE :kind uri :name local :scope "char *" :type})
+				  ({Binop :kind + :op}
+					  ({DRE :kind cp :name local :scope "int" :type}){INT :kind 1 :value}){CHAR :kind   :value}))
+		  ({Ret :kind "void" :type}))
+	     ({Unop :kind ++ :op}
+		    ({DRE :kind cp :name local :scope "int" :type}))
+	     ({Binop :kind = :op}
+		     ({DRE :kind scheme :name local :scope "int" :type})
+		     ({DRE :kind cp :name local :scope "int" :type}))
+	     ({If :kind}
+		  ({Binop :kind == :op}
+			  (({DRE :kind strncmp :name "int (const char *, const char *, unsigned long}" :type})
+			   ({DRE :kind uri :name local :scope "char *" :type}){STRING :kind ldap:// :value}{INT :kind 7 :value}){INT :kind 0 :value})
+		  ({Binop :kind = :op}
+			  ({DRE :kind c :name local :scope "int" :type}){INT :kind 0 :value})
+		  ({Binop :kind = :op}
+			  ({DRE :kind token :name local :scope "char *(11)" :type}){INT :kind 0 :value}
+			  ({DRE :kind uri :name local :scope "char *" :type}))
+		  ({While :kind}
+			  ({Binop :kind && :op}
+				  ({Binop :kind != :op}
+					  ({DRE :kind uri :name local :scope "char *" :type})
+					  ({DRE :kind cp :name local :scope "int" :type}){CHAR :kind   :value})
+				  ({Binop :kind < :op}
+					  ({DRE :kind c :name local :scope "int" :type})
+					  ({Binop :kind + :op}{INT :kind 10 :value}{INT :kind 1 :value})))
+			  ({If :kind}
+			       ({Binop :kind == :op}
+				       ({DRE :kind uri :name local :scope "char *" :type})
+				       ({DRE :kind cp :name local :scope "int" :type}){CHAR :kind ? :value})
+			       ({Unop :kind ++ :op}
+				      ({DRE :kind c :name local :scope "int" :type}))
+			       ({Label :kind VULN :name}
+				       ({Binop :kind = :op}
+					       ({DRE :kind token :name local :scope "char *(11)" :type})
+					       ({DRE :kind c :name local :scope "int" :type})
+					       ({Binop :kind + :op}
+						       ({Binop :kind + :op}
+							       ({DRE :kind uri :name local :scope "char *" :type})
+							       ({DRE :kind cp :name local :scope "int" :type})){INT :kind 1 :value})))
+			       ({Binop :kind = :op}
+				       ({DRE :kind uri :name local :scope "char *" :type})
+				       ({DRE :kind cp :name local :scope "int" :type}){CHAR :kind   :value}))
+			  ({Unop :kind ++ :op}
+				 ({DRE :kind cp :name local :scope "int" :type}))))
+	     ({Ret :kind "void" :type})))
+ ({Func :kind main :name "int" :type}
+	({Var :kind uri :name local :scope "char (20)" :type}{INT :kind 20 :value})
+	({Var :kind scheme :name local :scope "int" :type})
+	({Binop :kind = :op}
+		({DRE :kind uri :name local :scope "char (20)" :type})
+		({Binop :kind - :op}{INT :kind 20 :value}{INT :kind 1 :value}){CHAR :kind   :value})
+	({Binop :kind = :op}
+		({DRE :kind scheme :name local :scope "int" :type})
+		({Binop :kind + :op}{INT :kind 7 :value}{INT :kind 2 :value}))
+	(({DRE :kind escape_absolute_uri :name "void (char *, int}" :type})
+	 ({DRE :kind uri :name local :scope "char (20)" :type})
+	 ({DRE :kind scheme :name local :scope "int" :type}))
+	({Ret :kind "int" :type}{INT :kind 0 :value}))) 
+
