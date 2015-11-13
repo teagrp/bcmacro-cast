@@ -101,14 +101,78 @@ public:
   */
   
   // ここから
+  // TraverseDecl
+  bool TraverseDecl(Decl *decl) {
+    if (decl != NULL){
+      switch (decl->getKind()) {
+      case Decl::Field:
+	llvm::outs() << "\n";
+	llvm::outs() << "[";
+	RecursiveASTVisitor::TraverseDecl(decl);
+	llvm::outs() << "]";
+	break;
+      case Decl::Function:
+	if (linefeedflag == 0) {
+	  linefeedflag = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
+	llvm::outs() << "[";
+	RecursiveASTVisitor::TraverseDecl(decl);
+	llvm::outs() << "]";
+	break;
+      case Decl::ParmVar:
+	if (linefeedflag == 0) {
+	  linefeedflag = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
+	llvm::outs() << "[";
+	RecursiveASTVisitor::TraverseDecl(decl);
+	llvm::outs() << "]";
+	break;
+      case Decl::TranslationUnit:
+	RecursiveASTVisitor::TraverseDecl(decl);
+	break;
+      case Decl::Typedef:
+	RecursiveASTVisitor::TraverseDecl(decl);
+	break;
+      case Decl::Record:
+	if (linefeedflag == 0) {
+	  linefeedflag = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
+	llvm::outs() << "[";
+	RecursiveASTVisitor::TraverseDecl(decl);
+	llvm::outs() << "]";
+	break;
+      case Decl::Var:
+	if (linefeedflag == 0) {
+	  linefeedflag = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
+	llvm::outs() << "[";
+	RecursiveASTVisitor::TraverseDecl(decl);
+	llvm::outs() << "]";
+	break;
+      default :
+	llvm::outs() << decl->getDeclKindName();
+	RecursiveASTVisitor::TraverseDecl(decl);
+      }
+    }
+    return true;
+  }
+
   // FieldDecl (Structure Member)
-  bool TraverseFieldDecl(FieldDecl *field) {
+  /*bool TraverseFieldDecl(FieldDecl *field) {
     llvm::outs() << "\n";
     llvm::outs() << "[";
     RecursiveASTVisitor::TraverseFieldDecl(field);
     llvm::outs() << "]";
     return true;
-  }
+    }*/
   bool VisitFieldDecl(FieldDecl *field) {
     QualType fieldtype = field->getType();
     llvm::outs() << "{:kind Field "
@@ -136,7 +200,7 @@ public:
   }
   
   // FunctionDecl
-  bool TraverseFunctionDecl(FunctionDecl *Decl) {
+  /*bool TraverseFunctionDecl(FunctionDecl *Decl) {
     if (linefeedflag == 0) {
       linefeedflag = 1;
     } else {
@@ -146,25 +210,47 @@ public:
     RecursiveASTVisitor::TraverseFunctionDecl(Decl);
     llvm::outs() << "]";
     return true; 
-  }
+    }*/
   bool VisitFunctionDecl(FunctionDecl *Decl) {
     last_func = Decl->getQualifiedNameAsString();
     QualType functype = Decl->getResultType();
     //FullSourceLoc loc[2] = {
     //Context->getFullLoc(Decl->getSourceRange().getBegin()), 
     //Context->getFullLoc(Decl->getSourceRange().getEnd()) };
-    llvm::outs() << "{:kind Func "
+    llvm::outs() << "{:kind \"Func\""
 		 << " :name " << "\"" << last_func << "\""
-		 << " :type "<< "\"" << getTypeInfo(functype) << "\"}";
+		 << " :type " << "\"" << getTypeInfo(functype) << "\"";
+    llvm::outs() << "\n :Parm [";
+    if (Decl->param_size()) {
+      linefeedflag = 0;
+      for (int i = 0; i < (int)Decl->param_size(); i++) {
+	TraverseDecl(Decl->getParamDecl(i));
+      }
+    }
+    llvm::outs() << "]\n :body [";
+    linefeedflag = 0;
+    TraverseStmt(Decl->getBody());
+    llvm::outs() << "]}";
     //<< (Decl->getStorageClass() == SC_Static? ",static,": ",global,") 
     //<< loc[0].getManager().getFilename(loc[0]) << ", " 
     // << loc[0].getSpellingLineNumber() << ", "         
     // << loc[1].getSpellingLineNumber();
+    return false;
+  }
+
+  // ParmVarDecl
+  bool VisitParmVarDecl(ParmVarDecl *Decl) {
+    std::string varname = Decl->getNameAsString();
+    QualType vartype = Decl->getType();
+    llvm::outs() << "{:kind Parm " 
+		 << " :name " << "\"" << varname  << "\""
+      //<< "local :scope " // 引数はlocalとして扱うため非表示
+		 << " :type " << "\"" << getTypeInfo(vartype) << "\"}";
     return true;
   }
 
   // RecordDecl (Structure?)
-  bool TraverseRecordDecl(RecordDecl *record) {
+  /*bool TraverseRecordDecl(RecordDecl *record) {
    if (linefeedflag == 0) {
       linefeedflag = 1;
     } else {
@@ -174,7 +260,7 @@ public:
     RecursiveASTVisitor::TraverseRecordDecl(record);
     llvm::outs() << "]";
     return true;
-  }
+    }*/
   bool VisitRecordDecl(RecordDecl *record) {
     llvm::outs() << "{:kind Struct "
 		 << " :name" << "\"" << record->getName() << "\"}";
@@ -182,7 +268,7 @@ public:
   }
 
   // VarDecl
-  bool TraverseVarDecl(VarDecl *Decl) {
+  /*bool TraverseVarDecl(VarDecl *Decl) {
     if (linefeedflag == 0) {
       linefeedflag = 1;
     } else {
@@ -192,7 +278,7 @@ public:
     RecursiveASTVisitor::TraverseVarDecl(Decl);
     llvm::outs() << "]";
     return true;
-  }
+    }*/
   bool VisitVarDecl(VarDecl *Decl) {
     if (Decl->getKind() == 50) {
       return true;
@@ -201,9 +287,9 @@ public:
     std::string varname = Decl->getNameAsString();
     QualType vartype = Decl->getType();
     std::string arrsize;
-    llvm::outs() << "{" << ":kind "<< kindname  
-		 << " :name " << varname 
-		 << " :scope "<< (Decl->isFileVarDecl() == 1? "\"global\"":"\"local\"");
+    llvm::outs() << "{" << ":kind "<< "\"" << kindname << "\""  
+		 << " :name " << "\"" << varname << "\"" 
+		 << " :scope " << (Decl->isFileVarDecl() == 1? "\"global\"":"\"local\"");
     /* とりあえずTypeは...
       if (vartype->isArrayType()) {
       ArrayFlag = 1;
@@ -217,7 +303,7 @@ public:
     } else {
       llvm::outs() << vartype.getAsString();
       }*/
-    llvm::outs() << " :type" << "\"" << getTypeInfo(vartype) << "\"}";
+    llvm::outs() << " :type" << " \"" << getTypeInfo(vartype) << "\"}";
     return true;
   }
   
@@ -477,17 +563,6 @@ public:
   bool shouldUseDataRecursionFor(Stmt* S) const {
     return false;
   }
-
-  // ParmVarDecl
-  bool VisitParmVarDecl(ParmVarDecl *Decl) {
-    std::string varname = Decl->getNameAsString();
-    QualType vartype = Decl->getType();
-    llvm::outs() << "\n{:kind Parm " 
-		 << " :name " << "\"" << varname  << "\""
-      //<< "local :scope " // 引数はlocalとして扱うため非表示
-		 << " :type " << "\"" << getTypeInfo(vartype) << "\"}";
-    return true;
-  }
   
   // BreakStmt
   bool VisitBreakStmt(BreakStmt *Break) {
@@ -521,8 +596,21 @@ public:
 
   // ForStmt
   bool VisitForStmt(ForStmt *For) {
-    llvm::outs() << "{:kind \"For\"}";
-    return true;
+    llvm::outs() << "{:kind \"For\""
+		 << "\n :init [";
+    linefeedflag = 0;
+    TraverseStmt(For->getInit());
+    llvm::outs() << "]\n :condition ";
+    linefeedflag = 0;
+    TraverseStmt(For->getCond());
+    llvm::outs() << "\n :update [";
+    linefeedflag = 0;
+    TraverseStmt(For->getInc());
+    llvm::outs() << "]\n :body [";
+    linefeedflag = 0;
+    TraverseStmt(For->getBody());
+    llvm::outs() << "]}";
+    return false;
   }
 
   // GotoStmt
@@ -535,17 +623,21 @@ public:
 
   // IfStmt
   bool VisitIfStmt(IfStmt *If) {
-    llvm::outs() << "{:kind \"If\"}";
+    llvm::outs() << "{:kind \"If\""
+		 << "\n :condition ";
+    linefeedflag = 0;
     TraverseStmt(If->getCond());
-    llvm::outs() << "\n[";
-    llvm::outs() << "{:kind \"Then\"}";
+    llvm::outs() << "\n :then [";
+    linefeedflag = 0;
     TraverseStmt(If->getThen());
     llvm::outs() << "]";
     if (If->getElse()) {
-      llvm::outs() << "\n[";
-      llvm::outs() << "{:kind \"Else\"}";
+      llvm::outs() << "\n :else [";
+      linefeedflag = 0;
       TraverseStmt(If->getElse());
-      llvm::outs() << "]";
+      llvm::outs() << "]}";
+    } else {
+      llvm::outs() << "}";
     }
     return false;
   }
@@ -565,8 +657,15 @@ public:
   
   // WhileStmt
   bool VisitWhileStmt(WhileStmt *While) {
-    llvm::outs() << "{:kind \"While\"}";
-    return true;
+    llvm::outs() << "{:kind \"While\""
+		 << "\n :condition ";
+    linefeedflag = 0;
+    TraverseStmt(While->getCond());
+    llvm::outs() << "\n :body [";
+    linefeedflag = 0;
+    TraverseStmt(While->getBody());
+    llvm::outs() << "]}";
+    return false;
   }
  
   // ReturnStmt
@@ -625,7 +724,15 @@ public:
       std::string Declreftype = funcdecl->getResultType().getAsString();
       llvm::outs() << "{:kind \"DRE\"" 
 		   << " :name " << "\"" << Declref->getNameInfo() << "\"" 
-		   << " :type" << "\"" << getTypeInfo(functype) << "\"}";
+		   << " :type " << "\"" << getTypeInfo(functype) << "\"";
+      llvm::outs() << "\n :Parm [";
+      if (funcdecl->param_size()) {
+	linefeedflag = 0;
+	for (int i = 0; i < (int)funcdecl->param_size(); i++) {
+	  TraverseDecl(funcdecl->getParamDecl(i));
+	}
+      }
+      llvm::outs() << "]}";
     }
      return true;
   }
