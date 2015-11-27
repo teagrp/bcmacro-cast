@@ -114,16 +114,18 @@ public:
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
       case Decl::Function:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
       case Decl::ParmVar:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
@@ -131,6 +133,7 @@ public:
 	break;
       case Decl::TranslationUnit:
 	linefeedflag = 0;
+	linefeedbody = 0;
 	caseflag = 0;
 	labelflag = 0;
 	caselabel = "";
@@ -140,16 +143,18 @@ public:
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
       case Decl::Record:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
       case Decl::Var:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
@@ -196,7 +201,7 @@ public:
   bool VisitFunctionDecl(FunctionDecl *Decl) {
     last_func = Decl->getQualifiedNameAsString();
     QualType functype = Decl->getResultType();
-    llvm::outs() << "{:kind \"Func\""
+    llvm::outs() << "{:kind \"Funcdef\""
 		 << " :name " << "\"" << last_func << "\""
 		 << " :type " << "\"" << getTypeInfo(functype) << "\"";
     PrintSourceRange(Decl->getSourceRange());
@@ -209,6 +214,7 @@ public:
     }
     llvm::outs() << "]\n :body [";
     linefeedflag = 0;
+    linefeedbody = 0;
     TraverseStmt(Decl->getBody());
     llvm::outs() << "]}";
     //<< (Decl->getStorageClass() == SC_Static? ",static,": ",global,") 
@@ -230,11 +236,19 @@ public:
 
   // RecordDecl (Structure?)
   bool VisitRecordDecl(RecordDecl *record) {
-    llvm::outs() << "{:kind \"Struct\""
+    llvm::outs() << "{:kind \"Structdef\""
 		 << " :name " << "\"" << record->getName() << "\"";
     PrintSourceRange(record->getSourceRange()); 
-    llvm::outs() << "}";
-    return true;
+    llvm::outs() << " :Member [";
+    if (!(record->field_empty())) {
+      RecordDecl::field_iterator itr = record->field_begin();
+      while (itr != record->field_end()) {
+	TraverseDecl(itr->getCanonicalDecl());
+	itr++;
+      } 
+    }
+    llvm::outs() << "]}";
+    return false;
   }
 
   // VarDecl
@@ -264,12 +278,10 @@ public:
        }*/
     llvm::outs() << " :type " << "\"" << getTypeInfo(vartype) << "\"";
     PrintSourceRange(Decl->getSourceRange());
-    llvm::outs() << " :init ";
     if (Decl->hasInit()) {
+      llvm::outs() << " :init ";
       linefeedflag = 0;
       TraverseStmt(Decl->getInit());
-    } else {
-      llvm::outs() << "{}";
     }
     llvm::outs() << "}";
     return false;
@@ -317,7 +329,7 @@ public:
 	labelflag = 1;
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
-      case Stmt::CompoundStmtClass: 
+      case Stmt::CompoundStmtClass:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::ContinueStmtClass:
@@ -328,74 +340,73 @@ public:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::DefaultStmtClass:
-	llvm::outs() << "\n";
+	caseflag = 1;
+	labelflag = 1;
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::DoStmtClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
-	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::ForStmtClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
-	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::GotoStmtClass:
-	llvm::outs() << "\n";
-	llvm::outs() << "[";	
+	if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::IfStmtClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
-	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::LabelStmtClass:
-	llvm::outs() << "\n";
-	llvm::outs() << "[";
+	caseflag = 1;
+	labelflag = 1;
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::SwitchStmtClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
-	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::WhileStmtClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
-	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::ReturnStmtClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
@@ -411,25 +422,27 @@ public:
 	  llvm::outs() << "\n";
 	}
 	ArraySub = 1;
-	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::CallExprClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
 	FuncCall = 1;
-	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
+	break;
+      case Stmt::CStyleCastExprClass:
+	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::DeclRefExprClass:
-	if (FuncCall == 1 || ArraySub == 1) {
+	if (FuncCall == 1 || ArraySub == 1 || linefeedflag == 0 || linefeedbody == 0) {
 	  FuncCall = 0;
 	  ArraySub = 0;
+	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
@@ -444,43 +457,57 @@ public:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	llvm::outs() << "]";
 	break;
+      case Stmt::MemberExprClass:
+	if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
+	RecursiveASTVisitor::TraverseStmt(stmt);
+	break;
       case Stmt::ParenExprClass:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
-      case Stmt::UnaryOperatorClass:
-	if (linefeedflag == 0) {
-	  linefeedflag = 1;
-	} else {
-	  llvm::outs() << "\n";
-	}
-	llvm::outs() << "[";
+      case Stmt::UnaryExprOrTypeTraitExprClass:
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
       case Stmt::BinaryOperatorClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
-	llvm::outs() << "[";
-	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
-	break;
-      case Stmt::CStyleCastExprClass:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
-      case Stmt::MemberExprClass:
-	if (linefeedflag == 0) {
+      case Stmt::CompoundAssignOperatorClass:
+	RecursiveASTVisitor::TraverseStmt(stmt);
+	break;
+      case Stmt::UnaryOperatorClass:
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
-	llvm::outs() << "[";
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
 	break;
-      case Stmt::UnaryExprOrTypeTraitExprClass:
+      case Stmt::CharacterLiteralClass:
+	if (linefeedflag == 0) {
+	  linefeedflag = 1;
+	} else {
+	  //llvm::outs() << "\n";
+	}
+	RecursiveASTVisitor::TraverseStmt(stmt);
+	break;
+      case Stmt::FloatingLiteralClass:
+	if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::IntegerLiteralClass:
@@ -491,25 +518,10 @@ public:
 	}
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
-      case Stmt::FloatingLiteralClass:
-	if (linefeedflag == 0) {
-	  linefeedflag = 1;
-	} else {
-	  llvm::outs() << "\n";
-	}
-	RecursiveASTVisitor::TraverseStmt(stmt);
-	break;
-      case Stmt::CharacterLiteralClass:
-	if (linefeedflag == 0) {
-	  linefeedflag = 1;
-	} else {
-	  llvm::outs() << "\n";
-	}
-	RecursiveASTVisitor::TraverseStmt(stmt);
-	break;
       case Stmt::StringLiteralClass:
-	if (linefeedflag == 0) {
+	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
@@ -560,9 +572,16 @@ public:
   
   // DefaultStmt
   bool VisitDefaultStmt(DefaultStmt *Default) {
-    llvm::outs() << "{:kind \"Default\"";
+    os << "{:kind \"Default\"";
     PrintSourceRange(Default->getSourceRange());
-    llvm::outs() << "}";
+    os << "}";
+    if (labelflag > 1) {
+      caselabel += "\n";
+    }
+    caselabel += os.str();
+    os.str("");
+    os.clear();
+    labelflag = 0;
     return true;
   }
 
@@ -570,8 +589,15 @@ public:
   bool VisitDoStmt(DoStmt *Do) {
     llvm::outs() << "{:kind \"Do\"";
     PrintSourceRange(Do->getSourceRange());
-    llvm::outs() << "}";
-    return true;
+    llvm::outs() << "\n :condition ";
+    linefeedflag = 0;
+    TraverseStmt(Do->getCond());
+    llvm::outs() << "\n :body [";
+    linefeedflag = 0;
+    linefeedbody = 0;
+    TraverseStmt(Do->getBody());
+    llvm::outs() << "]}";
+    return false;
   }
 
   // ForStmt
@@ -589,6 +615,7 @@ public:
     TraverseStmt(For->getInc());
     llvm::outs() << "]\n :body [";
     linefeedflag = 0;
+    linefeedbody = 0;
     TraverseStmt(For->getBody());
     llvm::outs() << "]}";
     return false;
@@ -627,9 +654,16 @@ public:
 
   // LabelStmt
   bool VisitLabelStmt(LabelStmt *Label) {
-    llvm::outs() << "{:kind \"Label\"";
+    os << "{:kind \"Label\"";
     PrintSourceRange(Label->getSourceRange());
-    llvm::outs() << " :name" << " \"" << Label->getName() << "\"}";
+    os  << " :name " << "\"" << Label->getName() << "\"}";
+    if (labelflag > 1) {
+      caselabel += "\n";
+    }
+    caselabel += os.str();
+    os.str("");
+    os.clear();
+    labelflag = 0;
     return true;
   }
 
@@ -637,8 +671,15 @@ public:
   bool VisitSwitchStmt(SwitchStmt *Switch) {
     llvm::outs() << "{:kind \"Switch\"";
     PrintSourceRange(Switch->getSourceRange());
-    llvm::outs() << "}";
-    return true;
+    llvm::outs() << "\n :condition ";
+    linefeedflag = 0;
+    TraverseStmt(Switch->getCond());
+    llvm::outs() << "\n :body [";
+    linefeedflag = 0;
+    linefeedbody = 0;
+    TraverseStmt(Switch->getBody());
+    llvm::outs() << "]}";
+    return false;
   }
   
   // WhileStmt
@@ -650,6 +691,7 @@ public:
     TraverseStmt(While->getCond());
     llvm::outs() << "\n :body [";
     linefeedflag = 0;
+    linefeedbody = 0;
     TraverseStmt(While->getBody());
     llvm::outs() << "]}";
     return false;
@@ -658,26 +700,50 @@ public:
   // ReturnStmt
   bool VisitReturnStmt(ReturnStmt *Ret) {
     // 型情報が不安(void型関数で...)
-    if (Ret->getRetValue()) {
-      QualType rettype = (Ret->getRetValue())->getType();
-      llvm::outs() << "{:kind \"Ret\""
-		   << " :type "<< "\"" << getTypeInfo(rettype) << "\"";
-    } else {
-      llvm::outs() << "{:kind \"Ret\""
-		   << " :type "<< "\"void\"";
-    }
+    llvm::outs() << "{:kind \"Ret\"";
     PrintSourceRange(Ret->getSourceRange());
+    if (Ret->getRetValue()) {
+      llvm::outs() << " :value ";
+      linefeedflag = 0;
+      TraverseStmt(Ret->getRetValue());
+    } else {
+    
+    }
     llvm::outs() << "}";
-    return true;
+    return false;
   }
 
   // ArraySubscriptExpr
   bool VisitArraySubscriptExpr(ArraySubscriptExpr *arrsub) {
+    llvm::outs() << "{:kind \"ArrayRef\"";
+    PrintSourceRange(arrsub->getSourceRange());
+    llvm::outs() << "\n :Array ";
     TraverseStmt(arrsub->getLHS());
-    llvm::outs() << "\n[";
-    llvm::outs() << "{:kind \"Index\"}";
+    llvm::outs() << "\n :Index ";
+    linefeedflag = 0;
     TraverseStmt(arrsub->getRHS()); 
-    llvm::outs() << "]";
+    llvm::outs() << "}";
+    return false;
+  }
+
+  // CallExpr
+  bool VisitCallExpr(CallExpr *call) {
+    llvm::outs() << "{:kind \"FuncCall\"";
+    PrintSourceRange(call->getSourceRange());
+    llvm::outs() << " :type \"" << call->getType().getAsString() << "\""
+		 << "\n :Func ";
+    linefeedflag = 0;
+    TraverseStmt(call->getCallee());
+    llvm::outs() << "\n :Parm [";
+    if (call->getNumArgs() != 0) {
+      int argnum = 0;
+      linefeedflag = 0;
+      while (argnum != (int)call->getNumArgs()) {
+	TraverseStmt(call->getArg(argnum));
+	argnum++;
+      }
+    }
+    llvm::outs() << "]}";
     return false;
   }
 
@@ -717,14 +783,7 @@ public:
 		   << " :name " << "\"" << Declref->getNameInfo() << "\"" 
 		   << " :type " << "\"" << getTypeInfo(functype) << "\"";
       PrintSourceRange(Declref->getSourceRange());
-      llvm::outs() << "\n :Parm [";
-      if (funcdecl->param_size()) {
-	linefeedflag = 0;
-	for (int i = 0; i < (int)funcdecl->param_size(); i++) {
-	  TraverseDecl(funcdecl->getParamDecl(i));
-	}
-      }
-      llvm::outs() << "]}";
+      llvm::outs() << "}";
     }
     return true;
   }
@@ -736,9 +795,11 @@ public:
     if(mem->isArrow()) {
       llvm::outs() << "{:kind \"Binop\" :op \"->\"";
       PrintSourceRange(mem->getSourceRange());
-      llvm::outs() << "}";
+      llvm::outs() << "\n :LHS ";
       getlhsArrow(base);
-      getrhsArrow(vdecl); 
+      llvm::outs() << "\n :RHS ";
+      getrhsArrow(vdecl);
+      llvm::outs() << "}"; 
       return false;
     } 
     return true;
@@ -749,16 +810,15 @@ public:
       Expr *sub = imp->getSubExpr();
       DeclRefExpr *def = dyn_cast<DeclRefExpr>(sub);
       if (def) {
-	llvm::outs() << "\n[";
-	VisitDeclRefExpr(def);
-	llvm::outs() << "]";
+	linefeedflag = 0;
+	TraverseStmt(def);
       }
     }
     return true;
   }
   bool getrhsArrow(ValueDecl *vdecl) {
     QualType vartype = vdecl->getType();
-    llvm::outs() << "\n[{:kind \"DRE\""
+    llvm::outs() << "{:kind \"DRE\""
 		 << " :name " << "\"" << vdecl->getName() << "\"" 
 		 << " :scope \"member\"";
     /* とりあえずTypeは...
@@ -776,7 +836,7 @@ public:
        }*/
     llvm::outs() << " :type "<< "\"" << getTypeInfo(vartype) << "\"";
     PrintSourceRange(vdecl->getSourceRange());
-    llvm::outs() << "}]";
+    llvm::outs() << "}";
     return true;
   }
   
@@ -786,8 +846,11 @@ public:
     llvm::outs() << "{:kind \"Unop\""
 		 << " :op " << "\"" << Unop->getOpcodeStr(opcode) << "\"";
     PrintSourceRange(Unop->getSourceRange());
+    llvm::outs() << " :HS ";
+    linefeedflag = 0;
+    TraverseStmt(Unop->getSubExpr());
     llvm::outs() << "}";
-    return true;
+    return false;
   }
 
   // BinaryOperator
@@ -796,12 +859,40 @@ public:
 		 << " :op " << "\"" << Binop->getOpcodeStr() << "\"";
     PrintSourceRange(Binop->getSourceRange());
     if (caseflag != 0) {
-      llvm::outs() << " :label [" << caselabel << "]}";
-      caselabel = ""; 
-    } else {
-      llvm::outs() << "}";
+      llvm::outs() << " :label [" << caselabel << "]";
+      caselabel = "";
+      caseflag = 0;
+    } 
+    llvm::outs() << "\n :LHS ";
+    linefeedflag = 0;
+    TraverseStmt(Binop->getLHS());
+    llvm::outs() << "\n :RHS ";
+    linefeedflag = 0;
+    TraverseStmt(Binop->getRHS());
+    llvm::outs() << "}";
+      
+    return false;
+  }
+  
+  // LabelValue
+  void getLabelValue(Expr *literal){
+    std::string literalname;
+    QualType literaltype = literal->getType();
+    if (dyn_cast<IntegerLiteral>(literal)) {
+      literalname = "INT";
+    } else if (dyn_cast<CharacterLiteral>(literal)) {
+      literalname = "CHAR";
     }
-    return true;
+    os << "{:kind \"" << literalname << "\""
+      //<< " :value " << "\"" << literal->getValue() << "\"" 
+       << " :type "<< "\"" << literaltype.getAsString() << "\"";
+    PrintSourceRange(literal->getSourceRange());
+    os << "}}";
+    caselabel += os.str();
+    os.str("");
+    os.clear();
+    labelflag = 0;
+    return;
   }
 
   // IntegerLiteral
@@ -813,17 +904,9 @@ public:
       return true;
     }
     if (labelflag != 0) {
-      os << "{:kind \"INT\""
-	//<< " :value " << "\"" << Int->getValue() << "\"" 
-	 << " :type "<< "\"" << vartype.getAsString() << "\"";
-      PrintSourceRange(Int->getSourceRange());
-      os << "}}";
-      caselabel += os.str();
-      os.str("");
-      os.clear();
-      labelflag = 0;
+      getLabelValue(Int);
     } else {
-      llvm::outs() << "{:kind \"INT\""
+      llvm::outs() << "{:kind \"IntegerLiteral\""
 		   << " :value " << "\"" << Int->getValue() << "\"" 
 		   << " :type "<< "\"" << vartype.getAsString() << "\"";
     PrintSourceRange(Int->getSourceRange());
@@ -835,7 +918,7 @@ public:
   // FloatingLiteral
   bool VisitFloatingLiteral(FloatingLiteral *Float) {
     QualType vartype = Float->getType();
-    llvm::outs() << "{:kind \"FLOAT\""
+    llvm::outs() << "{:kind \"FloatingLiteral\""
 		 << " :value " << "\"" << Float->getValueAsApproximateDouble() << "\""
 		 << " :type "<< "\"" << vartype.getAsString() << "\"";
     PrintSourceRange(Float->getSourceRange());
@@ -845,18 +928,22 @@ public:
 
   // CharacterLiteral
   bool VisitCharacterLiteral(CharacterLiteral *Char) {
-    llvm::outs() << "{:kind \"CHAR\""
-		 << " :value " << "\"" << char(Char->getValue()) << "\""
-		 << " :type "<< "\"char\"";
-    PrintSourceRange(Char->getSourceRange());
-    llvm::outs() << "}";
+    if (labelflag != 0) {
+      getLabelValue(Char);
+    } else {
+      llvm::outs() << "{:kind \"CharacterLiteral\""
+		   << " :value " << "\"" << char(Char->getValue()) << "\""
+		   << " :type "<< "\"char\"";
+      PrintSourceRange(Char->getSourceRange());
+      llvm::outs() << "}";
+    }
     return true;
   }
 
   // StringLiteral
   bool VisitStringLiteral(StringLiteral *String) {
     QualType vartype = String->getType();
-    llvm::outs() << "{:kind \"STRING\""
+    llvm::outs() << "{:kind \"StringLiteral\""
 		 << " :value " << "\"" << String->getString().str() << "\""
 		 << " :type "<< "\"" << vartype.getAsString() << "\"";
     PrintSourceRange(String->getSourceRange());
@@ -888,14 +975,15 @@ private:
   ASTContext *Context;
   std::string last_func;
   std::string source_file;
-  std::string caselabel;
+  std::string caselabel; // 出力したいラベルの属性
   std::ostringstream os;
   unsigned paramsize;
   int ArrayFlag;
   int ArraySub;
-  int caseflag;
+  int caseflag; // ラベルが付いている証
   int FuncCall;
-  int labelflag;
+  int labelflag; // ラベル(case, default, label)が出現した印
+  int linefeedbody;
   int linefeedflag;
 };
 
