@@ -24,96 +24,20 @@ using namespace llvm::opt;
 class MyAstVisitor : public RecursiveASTVisitor<MyAstVisitor> {
 public:
   explicit MyAstVisitor(ASTContext *Context, llvm::StringRef InFile) : Context(Context), source_file(InFile) {}
-  /*
-    std::string toString(const Stmt *p) {
-    std::string s;
-    llvm::raw_string_ostream raw(s);
-    p->printPretty(raw, NULL, Context->getPrintingPolicy());
-    return raw.str();
-    }
-    
-    std::string getMemberName(MemberExpr *mem) {
-    Expr *base = mem->getBase();
-    ImplicitCastExpr *parent_imp = dyn_cast<ImplicitCastExpr>(base);
-    MemberExpr *parent_mem = dyn_cast<MemberExpr>(base);
-    DeclRefExpr *parent_def = dyn_cast<DeclRefExpr>(base);
-    std::string dot_arrow;
-    if(parent_mem){
-    Expr *grandpa = parent_mem->getBase();
-    ImplicitCastExpr *imp = dyn_cast<ImplicitCastExpr>(grandpa);
-    if(imp){    
-    return getFunctionName(grandpa) + "->" + mem->getMemberNameInfo().getAsString();
-    }else{
-    return getMemberName(parent_mem) + "." + mem->getMemberNameInfo().getAsString();
-    }
-    }
-    if(parent_imp){
-    llvm::outs() << "This is here!! \n";
-    return getFunctionName(base) + "->" + mem->getMemberNameInfo().getAsString();
-    }
-    if(parent_def){ 
-    return std::string(parent_def->getFoundDecl()->getName()) + "." + mem->getMemberNameInfo().getAsString();
-    }
-    return "";
-    }
-
-    std::string getFunctionName(Expr *callee_expr) {
-    ImplicitCastExpr *imp = dyn_cast<ImplicitCastExpr>(callee_expr);
-    if(!imp){
-    ParenExpr *paren = dyn_cast<ParenExpr>(callee_expr);
-    if(paren){
-    return toString(paren);
-    }
-    return "unknown";
-    }
-    Expr *sub = imp->getSubExpr();
-    if(!sub){
-    return "";
-    }
-    DeclRefExpr *def = dyn_cast<DeclRefExpr>(sub);
-    if(def){
-    return def->getFoundDecl()->getName();
-    }
-    MemberExpr *mem = dyn_cast<MemberExpr>(sub);
-    if(mem){ 
-    return getMemberName(mem);
-    }
-    
-    ParenExpr *par = dyn_cast<ParenExpr>(sub);
-    if(par){  
-    return toString(par);
-    }
-    
-    return "";
-    }*/
-  
-  /*
-    bool VisitCallExpr(CallExpr *cexpr) {
-    FullSourceLoc FullLocation = Context->getFullLoc(cexpr->getLocStart());
-    llvm::outs() << "call, " 
-    << last_func << ", " 
-    << getFunctionName(cexpr->getCallee()) << ", "
-    << FullLocation.getManager().getFilename(FullLocation) << ", " 
-    << FullLocation.getSpellingLineNumber() << ", "
-    << FullLocation.getSpellingColumnNumber();
-    for (clang::CallExpr::arg_iterator iter = cexpr->arg_begin(); iter != cexpr->arg_end(); ++iter) {
-    llvm::outs() <<  ", \"" << toString(*iter) << "\"";
-    }
-    llvm::outs() << "\n";
-    return true;
-    }
-  */
-  
-  // ここから
   // TraverseDecl
   bool TraverseDecl(Decl *decl) {
     if (decl != NULL){
       switch (decl->getKind()) {
       case Decl::Field:
-	llvm::outs() << "\n";
+	if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
-      case Decl::Function:
+      case Decl::Function:       
 	if (linefeedflag == 0 || linefeedbody == 0) {
 	  linefeedflag = 1;
 	  linefeedbody = 1;
@@ -171,30 +95,22 @@ public:
   // FieldDecl (Structure Member) 
   bool VisitFieldDecl(FieldDecl *field) {
     QualType fieldtype = field->getType();
-    llvm::outs() << "{:kind Field "
-		 << " :name " << "\"" << field->getName() << "\""
-		 << " :scope " << "member";
-    /* とりあえずTypeは”型”の文字列として扱う
-       if (fieldtype->isStructureType()) {
-       llvm::outs() << "[";
-       getStructInfo(fieldtype);
-       llvm::outs() << "]";
-       } else if (fieldtype->isArrayType()) {
-       ArrayFlag = 1;
-       llvm::outs() << "[";
-       getArrayInfo(fieldtype);
-       llvm::outs() << "]";
-       } else if (fieldtype->isPointerType()) {
-       llvm::outs() << "[";
-       getPointerInfo(fieldtype);
-       llvm::outs() << "]";
-       } else {
-       llvm::outs() << fieldtype.getAsString();
-       }*/
-    llvm::outs() << " :type "<< "\"" << getTypeInfo(fieldtype) << "\"";
-    PrintSourceRange(field->getSourceRange());
-    llvm::outs() << "}";
-    return true;
+    if (labelflag != 0) {
+      os << "{:kind \"Field\""
+	 << " :name " << "\"" << (std::string)field->getName() << "\""
+	 << " :scope " << "\"member\"";
+      PrintTypeInfo(fieldtype);
+      PrintSourceRange(field->getSourceRange());
+      os << "}";
+    } else {
+      llvm::outs() << "{:kind \"Field\""
+		   << " :name " << "\"" << field->getName() << "\""
+		   << " :scope " << "\"member\"";
+      PrintTypeInfo(fieldtype);
+      PrintSourceRange(field->getSourceRange());
+      llvm::outs() << "}";
+    }
+    return false;
   }
   
   // FunctionDecl
@@ -202,8 +118,9 @@ public:
     last_func = Decl->getQualifiedNameAsString();
     QualType functype = Decl->getResultType();
     llvm::outs() << "{:kind \"Funcdef\""
-		 << " :name " << "\"" << last_func << "\""
-		 << " :type " << "\"" << getTypeInfo(functype) << "\"";
+		 << " :name " << "\"" << last_func << "\"";
+    checkSpecifier(Decl->getStorageClass());
+    PrintTypeInfo(functype);
     PrintSourceRange(Decl->getSourceRange());
     llvm::outs() << "\n :Parm [";
     if (Decl->param_size()) {
@@ -217,8 +134,6 @@ public:
     linefeedbody = 0;
     TraverseStmt(Decl->getBody());
     llvm::outs() << "]}";
-    //<< (Decl->getStorageClass() == SC_Static? ",static,": ",global,") 
-    //<< loc[0].getManager().getFilename(loc[0]) << ", " 
     return false;
   }
 
@@ -227,8 +142,8 @@ public:
     std::string varname = Decl->getNameAsString();
     QualType vartype = Decl->getType();
     llvm::outs() << "{:kind \"Parm\"" 
-		 << " :name " << "\"" << varname  << "\""
-		 << " :type " << "\"" << getTypeInfo(vartype) << "\"";
+		 << " :name " << "\"" << varname  << "\"";
+    PrintTypeInfo(vartype);
     PrintSourceRange(Decl->getSourceRange());
     llvm::outs() << "}";
     return true;
@@ -236,10 +151,17 @@ public:
 
   // RecordDecl (Structure?)
   bool VisitRecordDecl(RecordDecl *record) {
-    llvm::outs() << "{:kind \"Structdef\""
-		 << " :name " << "\"" << record->getName() << "\"";
+    std::string recordkind;
+    if (record->isStruct()) {
+      recordkind = "Structdef";
+    } else if (record->isUnion()) {
+      recordkind = "Uniondef";
+    }
+    llvm::outs() << "{:kind " << recordkind
+		 << " :name " << "\"" << (std::string)record->getName() << "\"";
     PrintSourceRange(record->getSourceRange()); 
-    llvm::outs() << " :Member [";
+    llvm::outs() << "\n :Member [";
+    linefeedflag = 0;
     if (!(record->field_empty())) {
       RecordDecl::field_iterator itr = record->field_begin();
       while (itr != record->field_end()) {
@@ -263,23 +185,11 @@ public:
     llvm::outs() << "{" << ":kind "<< "\"" << kindname << "\""  
 		 << " :name " << "\"" << varname << "\"" 
 		 << " :scope " << (Decl->isFileVarDecl() == 1? "\"global\"":"\"local\"");
-    /* とりあえずTypeは...
-       if (vartype->isArrayType()) {
-       ArrayFlag = 1;
-       llvm::outs() << "[";
-       getArrayInfo(vartype);
-       llvm::outs() << "]";
-       } else if (vartype->isPointerType()) {
-       llvm::outs() << "[";
-       getPointerInfo(vartype);
-       llvm::outs() << "]";
-       } else {
-       llvm::outs() << vartype.getAsString();
-       }*/
-    llvm::outs() << " :type " << "\"" << getTypeInfo(vartype) << "\"";
+    checkSpecifier(Decl->getStorageClass());
+    PrintTypeInfo(vartype);
     PrintSourceRange(Decl->getSourceRange());
     if (Decl->hasInit()) {
-      llvm::outs() << " :init ";
+      llvm::outs() << "\n :init ";
       linefeedflag = 0;
       TraverseStmt(Decl->getInit());
     }
@@ -287,33 +197,335 @@ public:
     return false;
   }
   
-  std::string getTypeInfo(QualType typeInfo) {
-    std::string str;
-    str = typeInfo.getAsString();
-    return str;
-  }
-
-  void getArrayInfo(QualType arrInfo) {
-    llvm::outs() << "{Array :elmkind "
-		 << arrInfo->getAsArrayTypeUnsafe()->getElementType().getAsString() << " :elmtype "
-		 << arrInfo.getAsString() << " :elmsize}";
+  // 指定子:specifire::=(register, static, extern)
+  void checkSpecifier(StorageClass SC) {
+    if (labelflag != 0) {
+      switch(SC) {
+      case SC_Extern:
+	os << " :Extern \"true\"";
+	break;
+      case SC_Static:
+	os << " :Static \"true\"";
+	break;
+      case SC_Auto:
+	os << " :Auto \"true\"";
+	break;
+      case SC_Register:
+	os << " :Register \"true\"";
+	break;
+      case SC_None:
+      case SC_PrivateExtern:
+      case SC_OpenCLWorkGroupLocal:
+      default:
+	break;
+      }
+    } else { 
+      switch(SC) {
+      case SC_Extern:
+	llvm::outs() << " :Extern \"true\"";
+	break;
+      case SC_Static:
+	llvm::outs() << " :Static \"true\"";
+	break;
+      case SC_Auto:
+	llvm::outs() << " :Auto \"true\"";
+	break;
+      case SC_Register:
+	llvm::outs() << " :Register \"true\"";
+	break;
+      case SC_None:
+      case SC_PrivateExtern:
+      case SC_OpenCLWorkGroupLocal:
+      default:
+	break;
+      }
+    }
   }
   
-  void getPointerInfo(QualType ptrInfo) {
-    llvm::outs() << "{Pointer :elmkind ";
-    if (ptrInfo->getPointeeType()->isStructureType()) {
-      getStructInfo(ptrInfo->getPointeeType());
+  // :typeの情報を出力
+  void PrintTypeInfo(QualType typeInfo) {   
+    std::string Typename;
+    if (dyn_cast<AutoType>(typeInfo)) {//c++{11/14}専用みたい...
+      llvm::outs() << " :Auto \"true\"";
+      PrintQualifier(typeInfo);
+      PrintTypeInfo(dyn_cast<AutoType>(typeInfo)->getDeducedType());
     }
-    llvm::outs() << " :elmtype"
-		 << "}";
+    if (dyn_cast<TypedefType>(typeInfo)) {
+      TypedefNameDecl *TDtype = dyn_cast<TypedefType>(typeInfo)->getDecl();
+      llvm::outs() << " :Typedef \"true\"";
+      PrintQualifier(typeInfo);
+      PrintTypeInfo(TDtype->getUnderlyingType());
+    }
+    if (dyn_cast<BuiltinType>(typeInfo)) {
+      switch (dyn_cast<BuiltinType>(typeInfo)->getKind()) {
+      case BuiltinType::Void:
+	Typename = "Void";
+	break;
+      case BuiltinType::Bool:
+	Typename = "Bool";
+	break;
+      case BuiltinType::UChar:
+	Typename = "UnsignedChar";
+	break;
+      case BuiltinType::UShort:
+	Typename = "UnsignedShort";
+	break;
+      case BuiltinType::UInt:
+	Typename = "UnsignedInt";
+	break;
+      case BuiltinType::ULong:
+	Typename = "UnsignedLong";
+	break;
+      case BuiltinType::ULongLong:
+	Typename = "UnsigndLongLong";
+	break;
+      case BuiltinType::Char_S:
+	Typename = "Char";
+	break;
+      case BuiltinType::SChar:
+	Typename = "SignedChar";
+	break;
+      case BuiltinType::Short:
+	Typename = "Short";
+	break;
+      case BuiltinType::Int:
+	Typename = "Int";
+	break;
+      case BuiltinType::Long:
+	Typename = "Long";
+	break;
+      case BuiltinType::LongLong:
+	Typename = "LongLong";
+	break;
+      case BuiltinType::Float:
+	Typename = "Float";
+	break;
+      case BuiltinType::Double:
+	Typename = "Double";
+	break;
+      case BuiltinType::LongDouble:
+	Typename = "LongDouble";
+	break;
+      default:
+	Typename = "UnKnownError";
+	llvm::outs() << "\n \""<< typeInfo.getAsString() << "\"は, 初出です."
+		     << " astprint.cppのPrintTypeInfoにcaseを追加して下さい.";
+	break;
+      }
+      if (labelflag != 0) {
+	os << checkPointkey()
+	   << " {:kind \"" << Typename << "-type\"";
+	PrintQualifier(typeInfo);
+	os << "}";
+      } else {
+	llvm::outs() << checkPointkey()
+		     << " {:kind \"" << Typename << "-type\"";
+	PrintQualifier(typeInfo);
+	llvm::outs() << "}";
+      }
+    }
+    if (typeInfo->isArrayType()) {
+      QualType elmtype;
+      if (dyn_cast<ArrayType>(typeInfo)) {
+	elmtype = dyn_cast<ArrayType>(typeInfo)->getElementType();
+	if (labelflag != 0) {
+	  os << checkPointkey()
+	     << " {:kind \"Array-type\"";		   
+	  if (dyn_cast<ConstantArrayType>(typeInfo)) {
+	    os << " :Arraysize \"" 
+	       << dyn_cast<ConstantArrayType>(typeInfo)->getSize().toString(10, true) << "\"";
+	  }
+	  if (dyn_cast<VariableArrayType>(typeInfo)) {
+	    Expr *vaexpr = dyn_cast<VariableArrayType>(typeInfo)->getSizeExpr();
+	    os << " :ArraySizeExpression ";
+	    linefeedflag = 0;
+	    TraverseStmt(vaexpr);
+	  }
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(elmtype);
+	  os << "}";
+	} else {
+	  llvm::outs() << checkPointkey()
+		       << " {:kind \"Array-type\"";		   
+	  if (dyn_cast<ConstantArrayType>(typeInfo)) {
+	    llvm::outs() << " :ArraySize \"" 
+			 << dyn_cast<ConstantArrayType>(typeInfo)->getSize() << "\"";
+	  }
+	  if (dyn_cast<VariableArrayType>(typeInfo)) {
+	    Expr *vaexpr = dyn_cast<VariableArrayType>(typeInfo)->getSizeExpr();
+	    llvm::outs() << " :ArraySizeExpression ";
+	    linefeedflag = 0;
+	    TraverseStmt(vaexpr);
+	  }
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(elmtype);
+	  llvm::outs() << "}";
+	}
+      }
+      if (dyn_cast<ParenType>(typeInfo)) {
+        elmtype = dyn_cast<ParenType>(typeInfo)->getInnerType();
+	PrintTypeInfo(elmtype);
+      }
+      
+    }
+    if (typeInfo->isPointerType()) {
+      if (dyn_cast<PointerType>(typeInfo)) {
+	std::string key = checkPointkey();
+	pointflag = 1;
+	QualType elmtype = dyn_cast<PointerType>(typeInfo)->getPointeeType();
+	if (labelflag != 0) {
+	  os << key
+	     << " {:kind \"Pointer-type\"";
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(elmtype);
+	  os << "}";
+	} else {
+	  llvm::outs() << key
+		       << " {:kind \"Pointer-type\"";
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(elmtype);
+	  llvm::outs() << "}";
+	}
+      }
+    }
+    if (typeInfo->isStructureType()) {
+      if (labelflag != 0) {
+	if (dyn_cast<ElaboratedType>(typeInfo)) {
+	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	  os << checkPointkey()
+	     << " {:kind \"Strucure-type\"";
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(etype);
+	  os << "}";
+	} 
+	if (dyn_cast<RecordType>(typeInfo)) {
+	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	  os << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
+	  if (rdecl->getName() == "") {
+	    os << "\n :member[";
+	    linefeedflag = 0;
+	    if (!(rdecl->field_empty())) {
+	      RecordDecl::field_iterator itr = rdecl->field_begin();
+	      while (itr != rdecl->field_end()) {
+		TraverseDecl(itr->getCanonicalDecl());
+		itr++;
+	      } 
+	    }
+	    os << "]";
+	  }
+	}
+      } else {
+	if (dyn_cast<ElaboratedType>(typeInfo)) {
+	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	  llvm::outs() << checkPointkey()
+		       << " {:kind \"Strucure-type\"";
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(etype);
+	  llvm::outs() << "}";
+	} 
+	if (dyn_cast<RecordType>(typeInfo)) {
+	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	  llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";  
+	  if (rdecl->getName() == "") {
+	    llvm::outs() << "\n :member[";
+	    linefeedflag = 0;
+	    if (!(rdecl->field_empty())) {
+	      RecordDecl::field_iterator itr = rdecl->field_begin();
+	      while (itr != rdecl->field_end()) {
+		TraverseDecl(itr->getCanonicalDecl());
+		itr++;
+	      } 
+	    }
+	    llvm::outs() << "]";
+	  }
+	}
+      }
+    }
+    if (typeInfo->isUnionType()) {
+      if (labelflag != 0) {
+	if (dyn_cast<ElaboratedType>(typeInfo)) {
+	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	  os << checkPointkey()
+	     << " {:kind \"Union-type\"";
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(etype);
+	  os << "}";
+	} 
+	if (dyn_cast<RecordType>(typeInfo)) {
+	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	  os << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
+	  if (rdecl->getName() == "") {
+	    os << "\n :member[";
+	    linefeedflag = 0;
+	    if (!(rdecl->field_empty())) {
+	      RecordDecl::field_iterator itr = rdecl->field_begin();
+	      while (itr != rdecl->field_end()) {
+		TraverseDecl(itr->getCanonicalDecl());
+		itr++;
+	      } 
+	    }
+	    os << "]";
+	  }
+	}
+      } else {
+	if (dyn_cast<ElaboratedType>(typeInfo)) {
+	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	  llvm::outs() << checkPointkey()
+		       << " {:kind \"Union-type\"";
+	  PrintQualifier(typeInfo);
+	  PrintTypeInfo(etype);
+	  llvm::outs() << "}";
+	} 
+	if (dyn_cast<RecordType>(typeInfo)) {
+	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	  llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";
+	  if (rdecl->getName() == "") {
+	    llvm::outs() << "\n :member[";
+	    linefeedflag = 0;
+	    if (!(rdecl->field_empty())) {
+	      RecordDecl::field_iterator itr = rdecl->field_begin();
+	      while (itr != rdecl->field_end()) {
+		TraverseDecl(itr->getCanonicalDecl());
+		itr++;
+	      } 
+	    }
+	    llvm::outs() << "]";
+	  }
+	}
+      }
+    }
+    //llvm::outs()  << " " << typeInfo->getTypeClassName();
+  }
+  
+  std::string checkPointkey() {
+    std::string result;
+    if (pointflag == 1) {
+      result = " :Pointee";
+    } else {
+      result = " :type";
+    }
+    pointflag = 0;
+    return result;
   }
 
-  void getStructInfo(QualType structInfo) {
-    llvm::outs() << "{Struct :elmkind "
-		 << structInfo->getAsStructureType()->getDecl()->getName() << " :elmname"
-		 << "}";
+  void PrintQualifier(QualType Qual) {
+    if (labelflag != 0) {
+      if (Qual.isConstQualified()) {
+	os << " :const " << "\"true\"";
+      }
+      if (Qual.isVolatileQualified()) {
+	os << " :volatile " << "\"true\"";
+      }
+    } else {
+      if (Qual.isConstQualified()) {
+	llvm::outs() << " :const " << "\"true\"";
+      }
+      if (Qual.isVolatileQualified()) {
+	llvm::outs() << " :volatile " << "\"true\"";
+      }
+    }
   }
-
+    
   // Stmt : Binop, ReturnStmt, forstmt, ifstmt, ... etc
   // *Stmt, *Expr をカバーしていると思う
   bool TraverseStmt(Stmt *stmt) {
@@ -326,7 +538,7 @@ public:
 	break;
       case Stmt::CaseStmtClass:
 	caseflag = 1;
-	labelflag = 1;
+	labelflag++;
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::CompoundStmtClass:
@@ -341,7 +553,7 @@ public:
 	break;
       case Stmt::DefaultStmtClass:
 	caseflag = 1;
-	labelflag = 1;
+	labelflag++;
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::DoStmtClass:
@@ -382,7 +594,7 @@ public:
 	break;
       case Stmt::LabelStmtClass:
 	caseflag = 1;
-	labelflag = 1;
+	labelflag++;
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::SwitchStmtClass:
@@ -418,6 +630,9 @@ public:
 	} else if (ArraySub == 1) {
 	  RecursiveASTVisitor::TraverseStmt(stmt);
 	  break;
+	} else if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
 	} else {
 	  llvm::outs() << "\n";
 	}
@@ -452,7 +667,12 @@ public:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::InitListExprClass:
-	llvm::outs() << "\n";
+	if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
 	llvm::outs() << "[";	
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	llvm::outs() << "]";
@@ -544,6 +764,7 @@ public:
   bool VisitBreakStmt(BreakStmt *Break) {
     llvm::outs()  << "{:kind \"Break\"";
     PrintSourceRange(Break->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "}";
     return true;
   }
@@ -553,19 +774,25 @@ public:
     os << "{:kind \"Case\"";
     PrintSourceRange(Case->getSourceRange());
     os  << " :value ";
-    if (labelflag > 1) {
-      caselabel += "\n";
-    }
     caselabel += os.str();
     os.str("");
     os.clear();
     return true;
   }
   
+  // CompoundStmt
+  bool VisitCompoundStmt(CompoundStmt *compound) {
+    if (compound->body_empty()) {
+      linefeedflag = 1;
+      linefeedbody = 1;
+    }
+    return true;
+  }
   // ContinueStmt
   bool VisitContinueStmt(ContinueStmt *Continue) {
     llvm::outs() << "{:kind \"Continue\"";
     PrintSourceRange(Continue->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "}";
     return true;
   } 
@@ -575,9 +802,6 @@ public:
     os << "{:kind \"Default\"";
     PrintSourceRange(Default->getSourceRange());
     os << "}";
-    if (labelflag > 1) {
-      caselabel += "\n";
-    }
     caselabel += os.str();
     os.str("");
     os.clear();
@@ -589,6 +813,7 @@ public:
   bool VisitDoStmt(DoStmt *Do) {
     llvm::outs() << "{:kind \"Do\"";
     PrintSourceRange(Do->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(Do->getCond());
@@ -604,6 +829,7 @@ public:
   bool VisitForStmt(ForStmt *For) {
     llvm::outs() << "{:kind \"For\"";
     PrintSourceRange(For->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "\n :init [";
     linefeedflag = 0;
     TraverseStmt(For->getInit());
@@ -626,7 +852,8 @@ public:
     NamedDecl *label = dyn_cast<NamedDecl>(Goto->getLabel());
     llvm::outs() << "{:kind \"Goto\"";
     PrintSourceRange(Goto->getSourceRange());
-    llvm::outs() << " :label " << "\"" << label->getName() << "\"}";
+    checkLabel(); 
+    llvm::outs() << " :goto " << "\"" << label->getName() << "\"}";
     return true;
   }
 
@@ -634,6 +861,7 @@ public:
   bool VisitIfStmt(IfStmt *If) {
     llvm::outs() << "{:kind \"If\"";
     PrintSourceRange(If->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(If->getCond());
@@ -657,9 +885,6 @@ public:
     os << "{:kind \"Label\"";
     PrintSourceRange(Label->getSourceRange());
     os  << " :name " << "\"" << Label->getName() << "\"}";
-    if (labelflag > 1) {
-      caselabel += "\n";
-    }
     caselabel += os.str();
     os.str("");
     os.clear();
@@ -671,6 +896,7 @@ public:
   bool VisitSwitchStmt(SwitchStmt *Switch) {
     llvm::outs() << "{:kind \"Switch\"";
     PrintSourceRange(Switch->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(Switch->getCond());
@@ -686,6 +912,7 @@ public:
   bool VisitWhileStmt(WhileStmt *While) {
     llvm::outs() << "{:kind \"While\"";
     PrintSourceRange(While->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(While->getCond());
@@ -699,9 +926,9 @@ public:
  
   // ReturnStmt
   bool VisitReturnStmt(ReturnStmt *Ret) {
-    // 型情報が不安(void型関数で...)
     llvm::outs() << "{:kind \"Ret\"";
     PrintSourceRange(Ret->getSourceRange());
+    checkLabel(); 
     if (Ret->getRetValue()) {
       llvm::outs() << " :value ";
       linefeedflag = 0;
@@ -717,6 +944,7 @@ public:
   bool VisitArraySubscriptExpr(ArraySubscriptExpr *arrsub) {
     llvm::outs() << "{:kind \"ArrayRef\"";
     PrintSourceRange(arrsub->getSourceRange());
+    checkLabel(); 
     llvm::outs() << "\n :Array ";
     TraverseStmt(arrsub->getLHS());
     llvm::outs() << "\n :Index ";
@@ -728,10 +956,12 @@ public:
 
   // CallExpr
   bool VisitCallExpr(CallExpr *call) {
+    QualType calltype = call->getType();
     llvm::outs() << "{:kind \"FuncCall\"";
     PrintSourceRange(call->getSourceRange());
-    llvm::outs() << " :type \"" << call->getType().getAsString() << "\""
-		 << "\n :Func ";
+    checkLabel(); 
+    PrintTypeInfo(calltype);
+    llvm::outs() << "\n :Func ";
     linefeedflag = 0;
     TraverseStmt(call->getCallee());
     llvm::outs() << "\n :Parm [";
@@ -753,37 +983,52 @@ public:
     VarDecl *vardecl = dyn_cast<VarDecl>(valuedecl);
     FunctionDecl *funcdecl = dyn_cast<FunctionDecl>(valuedecl);
     std::string scope = "";
-    if (vardecl) {// 変数の場合
-      QualType vartype = vardecl->getType();
-      scope = (vardecl->isFileVarDecl() == 1? "global":"local");
-      std::string Declreftype = Declref->getType().getAsString();
-      llvm::outs() << "{:kind \"DRE\"" 
-		   << " :name " << "\"" << Declref->getNameInfo() << "\""
-		   << " :scope " << "\"" << scope << "\"";
-      /* とりあえずTypeは...
-	 if (vartype->isArrayType()) {
-	 ArrayFlag = 1;
-	 llvm::outs() << "[";
-	 getArrayInfo(vartype);
-	 llvm::outs() << "]";
-	 } else if (vartype->isPointerType()) {
-	 llvm::outs() << "[";
-	 getPointerInfo(vartype);
-	 llvm::outs() << "]";
-	 } else {
-	 llvm::outs() << vartype.getAsString();
-	 }*/
-      llvm::outs() << " :type " << "\"" << getTypeInfo(vartype) << "\"";
-      PrintSourceRange(Declref->getSourceRange());
-      llvm::outs() << "}";
-    } else if (funcdecl) {// 関数の場合
-      QualType functype = funcdecl->getType();
-      std::string Declreftype = funcdecl->getResultType().getAsString();
-      llvm::outs() << "{:kind \"DRE\"" 
-		   << " :name " << "\"" << Declref->getNameInfo() << "\"" 
-		   << " :type " << "\"" << getTypeInfo(functype) << "\"";
-      PrintSourceRange(Declref->getSourceRange());
-      llvm::outs() << "}";
+    if (labelflag != 0) {
+      if (vardecl) {// 変数の場合
+	QualType vartype = vardecl->getType();
+	scope = (vardecl->isFileVarDecl() == 1? "global":"local");
+	std::string Declreftype = Declref->getType().getAsString();
+	os << "{:kind \"DRE\"" 
+	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\""
+	   << " :scope " << "\"" << scope << "\"";
+	checkSpecifier(vardecl->getStorageClass());
+	PrintTypeInfo(vartype);
+	PrintSourceRange(Declref->getSourceRange());
+	os << "}";
+      } else if (funcdecl) {// 関数の場合
+	QualType functype = funcdecl->getType();
+	std::string Declreftype = funcdecl->getResultType().getAsString();
+	os << "{:kind \"DRE\"" 
+	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\"";
+	checkSpecifier(funcdecl->getStorageClass());
+	PrintTypeInfo(functype);
+	PrintSourceRange(Declref->getSourceRange());
+	os << "}";
+      }
+    } else {
+      if (vardecl) {// 変数の場合
+	QualType vartype = vardecl->getType();
+	scope = (vardecl->isFileVarDecl() == 1? "global":"local");
+	std::string Declreftype = Declref->getType().getAsString();
+	llvm::outs() << "{:kind \"DRE\"" 
+		     << " :name " << "\"" << Declref->getNameInfo() << "\""
+		     << " :scope " << "\"" << scope << "\"";
+	checkSpecifier(vardecl->getStorageClass());
+	PrintTypeInfo(vartype);
+	PrintSourceRange(Declref->getSourceRange());
+	checkLabel(); 
+	llvm::outs() << "}";
+      } else if (funcdecl) {// 関数の場合
+	QualType functype = funcdecl->getType();
+	std::string Declreftype = funcdecl->getResultType().getAsString();
+	llvm::outs() << "{:kind \"DRE\"" 
+		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
+	checkSpecifier(funcdecl->getStorageClass());
+	PrintTypeInfo(functype);
+	PrintSourceRange(Declref->getSourceRange());
+	checkLabel(); 
+	llvm::outs() << "}";
+      }
     }
     return true;
   }
@@ -795,6 +1040,7 @@ public:
     if(mem->isArrow()) {
       llvm::outs() << "{:kind \"Binop\" :op \"->\"";
       PrintSourceRange(mem->getSourceRange());
+      checkLabel(); 
       llvm::outs() << "\n :LHS ";
       getlhsArrow(base);
       llvm::outs() << "\n :RHS ";
@@ -821,20 +1067,7 @@ public:
     llvm::outs() << "{:kind \"DRE\""
 		 << " :name " << "\"" << vdecl->getName() << "\"" 
 		 << " :scope \"member\"";
-    /* とりあえずTypeは...
-       if (vartype->isArrayType()) {
-       ArrayFlag = 1;
-       llvm::outs() << "[";
-       getArrayInfo(vartype);
-       llvm::outs() << "]";
-       } else if (vartype->isPointerType()) {
-       llvm::outs() << "[";
-       getPointerInfo(vartype);
-       llvm::outs() << "]";
-       } else {
-       llvm::outs() << vartype.getAsString();
-       }*/
-    llvm::outs() << " :type "<< "\"" << getTypeInfo(vartype) << "\"";
+    PrintTypeInfo(vartype);
     PrintSourceRange(vdecl->getSourceRange());
     llvm::outs() << "}";
     return true;
@@ -846,6 +1079,7 @@ public:
     llvm::outs() << "{:kind \"Unop\""
 		 << " :op " << "\"" << Unop->getOpcodeStr(opcode) << "\"";
     PrintSourceRange(Unop->getSourceRange());
+    checkLabel(); 
     llvm::outs() << " :HS ";
     linefeedflag = 0;
     TraverseStmt(Unop->getSubExpr());
@@ -858,11 +1092,7 @@ public:
     llvm::outs() << "{:kind \"Binop\"" 
 		 << " :op " << "\"" << Binop->getOpcodeStr() << "\"";
     PrintSourceRange(Binop->getSourceRange());
-    if (caseflag != 0) {
-      llvm::outs() << " :label [" << caselabel << "]";
-      caselabel = "";
-      caseflag = 0;
-    } 
+    checkLabel(); 
     llvm::outs() << "\n :LHS ";
     linefeedflag = 0;
     TraverseStmt(Binop->getLHS());
@@ -877,15 +1107,21 @@ public:
   // LabelValue
   void getLabelValue(Expr *literal){
     std::string literalname;
+    std::string literalvalue;
     QualType literaltype = literal->getType();
     if (dyn_cast<IntegerLiteral>(literal)) {
-      literalname = "INT";
+      literalname = "IntegerLabel";
+      IntegerLiteral* intL = dyn_cast<IntegerLiteral>(literal);
+      os << "{:kind \"" << literalname << "\""
+	 << " :value " << "\"" << intL->getValue().toString(10, true) << "\"";
     } else if (dyn_cast<CharacterLiteral>(literal)) {
-      literalname = "CHAR";
+      literalname = "CharacterLabel";
+      CharacterLiteral* charL = dyn_cast<CharacterLiteral>(literal);
+      os << "{:kind \"" << literalname << "\""
+	 << " :value " << "\"" << charL->getValue() << "\""
+	 << " :character " << "\"" << char(charL->getValue()) << "\"";
     }
-    os << "{:kind \"" << literalname << "\""
-      //<< " :value " << "\"" << literal->getValue() << "\"" 
-       << " :type "<< "\"" << literaltype.getAsString() << "\"";
+    PrintTypeInfo(literaltype);
     PrintSourceRange(literal->getSourceRange());
     os << "}}";
     caselabel += os.str();
@@ -898,19 +1134,14 @@ public:
   // IntegerLiteral
   bool VisitIntegerLiteral(IntegerLiteral *Int) {
     QualType vartype = Int->getType();
-    // ここの場合分けを見なおす必要あり, いるとこできえてる(ifの条件のとこにIntegerliteralが現れる場合に変になる場合がある)
-    if (ArrayFlag == 1) {
-      ArrayFlag = 0;
-      return true;
-    }
     if (labelflag != 0) {
       getLabelValue(Int);
     } else {
       llvm::outs() << "{:kind \"IntegerLiteral\""
-		   << " :value " << "\"" << Int->getValue() << "\"" 
-		   << " :type "<< "\"" << vartype.getAsString() << "\"";
-    PrintSourceRange(Int->getSourceRange());
-    llvm::outs() << "}";
+		   << " :value " << "\"" << Int->getValue() << "\"";
+      PrintTypeInfo(vartype);
+      PrintSourceRange(Int->getSourceRange());
+      llvm::outs() << "}";
     }
     return true;
   }
@@ -919,8 +1150,8 @@ public:
   bool VisitFloatingLiteral(FloatingLiteral *Float) {
     QualType vartype = Float->getType();
     llvm::outs() << "{:kind \"FloatingLiteral\""
-		 << " :value " << "\"" << Float->getValueAsApproximateDouble() << "\""
-		 << " :type "<< "\"" << vartype.getAsString() << "\"";
+		 << " :value " << "\"" << Float->getValueAsApproximateDouble() << "\"";
+    PrintTypeInfo(vartype);
     PrintSourceRange(Float->getSourceRange());
     llvm::outs() << "}";
     return true;
@@ -928,12 +1159,14 @@ public:
 
   // CharacterLiteral
   bool VisitCharacterLiteral(CharacterLiteral *Char) {
+    QualType vartype = Char->getType();
     if (labelflag != 0) {
       getLabelValue(Char);
     } else {
       llvm::outs() << "{:kind \"CharacterLiteral\""
-		   << " :value " << "\"" << char(Char->getValue()) << "\""
-		   << " :type "<< "\"char\"";
+		   << " :value " << "\"" << Char->getValue() << "\""
+		   << " :character " << "\"" << char(Char->getValue()) << "\"";
+      PrintTypeInfo(vartype);
       PrintSourceRange(Char->getSourceRange());
       llvm::outs() << "}";
     }
@@ -944,14 +1177,15 @@ public:
   bool VisitStringLiteral(StringLiteral *String) {
     QualType vartype = String->getType();
     llvm::outs() << "{:kind \"StringLiteral\""
-		 << " :value " << "\"" << String->getString().str() << "\""
-		 << " :type "<< "\"" << vartype.getAsString() << "\"";
+		 << " :value " << "\"" << String->getString().str() << "\"";
+    PrintTypeInfo(vartype);
     PrintSourceRange(String->getSourceRange());
     llvm::outs() << "}";
     return true;
   }
 
-  // 出力関係
+  //// 出力関係
+  // 行数
   void PrintSourceRange(SourceRange range) {
     if (labelflag != 0) {
       os << " :line [" << 
@@ -967,7 +1201,16 @@ public:
 	Context->getFullLoc(range.getBegin()).getSpellingLineNumber() <<
 	" " <<
 	Context->getFullLoc(range.getEnd()).getSpellingLineNumber() <<
-      "]";
+	"]";
+    }
+  }
+
+  // ラベルの有無
+  void checkLabel() {
+    if (caseflag != 0) {
+      llvm::outs() << " :label [" << caselabel << "]";
+      caselabel = "";
+      caseflag = 0;
     }
   }
   
@@ -978,13 +1221,13 @@ private:
   std::string caselabel; // 出力したいラベルの属性
   std::ostringstream os;
   unsigned paramsize;
-  int ArrayFlag;
   int ArraySub;
   int caseflag; // ラベルが付いている証
   int FuncCall;
   int labelflag; // ラベル(case, default, label)が出現した印
   int linefeedbody;
   int linefeedflag;
+  int pointflag;
 };
 
 
