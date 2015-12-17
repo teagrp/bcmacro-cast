@@ -3,7 +3,7 @@
 #define EOS '\0'
 #define LDAP "ldap://"
 #define TOKEN_SZ (BASE_SZ + 1)
-#define BASE_SZ 10 // 適当に
+#define BASE_SZ 25 // 適当に
 #define URI_SZ 20   // 追加した
 #define LDAP_SZ 7  // 部分
 

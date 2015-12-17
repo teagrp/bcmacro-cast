@@ -6,12 +6,21 @@ int func (int a) {
   return 0;
 }
 
-int func (int a, int b) {
+int function (int a, int b) {
   x = a + b;
+  return x;
+}
+
+int funcsion (char str) {
   return 0;
 }
 
-int func (char str) {
+int main() {
+  int s = 10, t = 50;
+
+  s = function(s, t);
+  s = s + 100;
+  func(s);
+  
   return 0;
 }
-
