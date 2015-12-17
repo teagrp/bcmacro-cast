@@ -84,14 +84,25 @@ public:
 	}
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
+	//以下c++関係のもの
+	/*case Decl::ClassTemplate:
+	RecursiveASTVisitor::TraverseDecl(decl);
+	break;
+      case Decl::CXXRecord:
+	RecursiveASTVisitor::TraverseDecl(decl);
+	break;*/
       default :
-	llvm::outs() << decl->getDeclKindName();
+	llvm::outs() << " ?Decl? " << decl->getDeclKindName();
 	RecursiveASTVisitor::TraverseDecl(decl);
       }
     }
     return true;
   }
 
+  bool VisitClassTemplateDecl(ClassTemplateDecl *ctdecl) {
+    llvm::outs() << "{:kind \"ClassTemplate\" :nanka1 \"typenameをいれたい\" :nanka2 \"Class allocatorのヤツ(Decl)\"}";
+    return true;
+  }
   // FieldDecl (Structure Member) 
   bool VisitFieldDecl(FieldDecl *field) {
     QualType fieldtype = field->getType();
@@ -153,9 +164,11 @@ public:
   bool VisitRecordDecl(RecordDecl *record) {
     std::string recordkind;
     if (record->isStruct()) {
-      recordkind = "Structdef";
+      recordkind = "\"Structdef\"";
     } else if (record->isUnion()) {
-      recordkind = "Uniondef";
+      recordkind = "\"Uniondef\"";
+    } else if (record->isClass()) {
+      recordkind = "\"Classdef\"";
     }
     llvm::outs() << "{:kind " << recordkind
 		 << " :name " << "\"" << (std::string)record->getName() << "\"";
@@ -252,9 +265,12 @@ public:
     }
     if (dyn_cast<TypedefType>(typeInfo)) {
       TypedefNameDecl *TDtype = dyn_cast<TypedefType>(typeInfo)->getDecl();
-      llvm::outs() << " :Typedef \"true\"";
+      llvm::outs() << checkPointkey() 
+		   << " {:kind \"Typedef-type\"" 
+		   << " :typename " << "\"" << TDtype->getName() << "\"";
       PrintQualifier(typeInfo);
       PrintTypeInfo(TDtype->getUnderlyingType());
+      llvm::outs() << "}";
     }
     if (dyn_cast<BuiltinType>(typeInfo)) {
       switch (dyn_cast<BuiltinType>(typeInfo)->getKind()) {
@@ -305,6 +321,11 @@ public:
 	break;
       case BuiltinType::LongDouble:
 	Typename = "LongDouble";
+	break;
+	//以下c++に関するもの
+      case BuiltinType::WChar_S:
+      case BuiltinType::WChar_U:
+	Typename = "WChar_t";
 	break;
       default:
 	Typename = "UnKnownError";
@@ -494,6 +515,7 @@ public:
 	}
       }
     }
+    
     //llvm::outs()  << " " << typeInfo->getTypeClassName();
   }
   
@@ -747,8 +769,12 @@ public:
 	}
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
+	//以下C++に関係
+      case Stmt::CXXOperatorCallExprClass:
+	RecursiveASTVisitor::TraverseStmt(stmt);
+	break;
       default:
-	llvm::outs() << "[" << stmt->getStmtClassName();	
+	llvm::outs() << "[Stmt " << stmt->getStmtClassName();	
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	llvm::outs() << "]";
       }
@@ -759,7 +785,7 @@ public:
   bool shouldUseDataRecursionFor(Stmt* S) const {
     return false;
   }
-  
+ 
   // BreakStmt
   bool VisitBreakStmt(BreakStmt *Break) {
     llvm::outs()  << "{:kind \"Break\"";
@@ -1185,8 +1211,9 @@ public:
   }
 
   //// 出力関係
-  // 行数
+  // 行数 
   void PrintSourceRange(SourceRange range) {
+    FullSourceLoc FullLocation = Context->getFullLoc(range.getBegin());
     if (labelflag != 0) {
       os << " :line [" << 
 	Context->getFullLoc(range.getBegin()).getSpellingLineNumber() <<
@@ -1202,6 +1229,9 @@ public:
 	" " <<
 	Context->getFullLoc(range.getEnd()).getSpellingLineNumber() <<
 	"]";
+      // U>_<U
+      //llvm::outs() << " :Filename " << " \""
+      //	   << FullLocation.getManager().getFilename(FullLocation) << "\"";
     }
   }
 
