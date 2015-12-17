@@ -1,0 +1,10 @@
+add_clang_executable(astdp
+astdp.cpp
+)
+
+target_link_libraries(astdp clangFrontendTool clangFrontend
+clangDriver clangSerialization clangCodeGen clangParse clangSema
+clangStaticAnalyzerFrontend clangStaticAnalyzerCheckers
+clangStaticAnalyzerCore clangAnalysis clangARCMigrate
+clangRewriteCore clangRewriteFrontend clangEdit clangAST
+clangASTMatchers clangLex clangBasic clangTooling)
