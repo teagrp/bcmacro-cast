@@ -27,6 +27,7 @@ public:
   // TraverseDecl
   bool TraverseDecl(Decl *decl) {
     if (decl != NULL){
+      //llvm::outs() << " ?Decl? " << decl->getDeclKindName();
       switch (decl->getKind()) {
       case Decl::Field:
 	if (linefeedflag == 0 || linefeedbody == 0) {
@@ -59,6 +60,8 @@ public:
 	linefeedflag = 0;
 	linefeedbody = 0;
 	caseflag = 0;
+	pointflag = 0;
+	firstrecord = 0;
 	labelflag = 0;
 	caselabel = "";
 	RecursiveASTVisitor::TraverseDecl(decl);
@@ -84,13 +87,44 @@ public:
 	}
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
-	//以下c++関係のもの
-	/*case Decl::ClassTemplate:
+      case Decl::Enum:
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
-      case Decl::CXXRecord:
+      case Decl::EnumConstant:
 	RecursiveASTVisitor::TraverseDecl(decl);
-	break;*/
+	break;
+	//以下c++関係のもの
+      case Decl::ClassTemplate:
+      case Decl::CXXRecord:
+      case Decl::CXXMethod:
+	if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
+	RecursiveASTVisitor::TraverseDecl(decl);
+	break;
+      case Decl::ClassTemplateSpecialization:
+	//RecursiveASTVisitor::TraverseDecl(decl);
+	//	llvm::outs() << " ?Decl? " << decl->getDeclKindName();
+	break;
+      case Decl::ClassTemplatePartialSpecialization:
+      case Decl::CXXConstructor:
+      case Decl::CXXConversion:
+      case Decl::CXXDestructor:
+      case Decl::Empty:
+      case Decl::FunctionTemplate:
+      case Decl::LinkageSpec:
+      case Decl::Namespace:
+      case Decl::NonTypeTemplateParm:
+      case Decl::TemplateTypeParm:
+      case Decl::Using:
+      case Decl::UsingDirective:
+      case Decl::UsingShadow:
+	//llvm::outs() << " ?Decl? " << decl->getDeclKindName();
+	RecursiveASTVisitor::TraverseDecl(decl);
+	break;
       default :
 	llvm::outs() << " ?Decl? " << decl->getDeclKindName();
 	RecursiveASTVisitor::TraverseDecl(decl);
@@ -98,11 +132,17 @@ public:
     }
     return true;
   }
-
+  
+  // ClassTemplate
   bool VisitClassTemplateDecl(ClassTemplateDecl *ctdecl) {
-    llvm::outs() << "{:kind \"ClassTemplate\" :nanka1 \"typenameをいれたい\" :nanka2 \"Class allocatorのヤツ(Decl)\"}";
-    return true;
+    llvm::outs() << "{:kind \"ClassTemplate\"";
+    llvm::outs() << " :Template ";
+    TraverseDecl(ctdecl->getTemplatedDecl());
+    llvm::outs() << "}";
+    return false;
   }
+
+  //
   // FieldDecl (Structure Member) 
   bool VisitFieldDecl(FieldDecl *field) {
     QualType fieldtype = field->getType();
@@ -110,6 +150,7 @@ public:
       os << "{:kind \"Field\""
 	 << " :name " << "\"" << (std::string)field->getName() << "\""
 	 << " :scope " << "\"member\"";
+      PrintDisplayType(fieldtype);
       PrintTypeInfo(fieldtype);
       PrintSourceRange(field->getSourceRange());
       os << "}";
@@ -117,6 +158,7 @@ public:
       llvm::outs() << "{:kind \"Field\""
 		   << " :name " << "\"" << field->getName() << "\""
 		   << " :scope " << "\"member\"";
+      PrintDisplayType(fieldtype);
       PrintTypeInfo(fieldtype);
       PrintSourceRange(field->getSourceRange());
       llvm::outs() << "}";
@@ -126,25 +168,50 @@ public:
   
   // FunctionDecl
   bool VisitFunctionDecl(FunctionDecl *Decl) {
-    last_func = Decl->getQualifiedNameAsString();
-    QualType functype = Decl->getResultType();
-    llvm::outs() << "{:kind \"Funcdef\""
-		 << " :name " << "\"" << last_func << "\"";
-    checkSpecifier(Decl->getStorageClass());
-    PrintTypeInfo(functype);
-    PrintSourceRange(Decl->getSourceRange());
-    llvm::outs() << "\n :Parm [";
-    if (Decl->param_size()) {
-      linefeedflag = 0;
-      for (int i = 0; i < (int)Decl->param_size(); i++) {
-	TraverseDecl(Decl->getParamDecl(i));
+    if (dyn_cast<CXXMethodDecl>(Decl)) {
+      CXXMethodDecl *method = dyn_cast<CXXMethodDecl>(Decl);
+      last_func = method->getQualifiedNameAsString();
+      QualType functype = method->getResultType();
+      llvm::outs() << "{:kind \"Method\""
+		   << " :name " << "\"" << last_func << "\"";
+      checkSpecifier(method->getStorageClass());
+      PrintDisplayType(functype);
+      PrintTypeInfo(functype);
+      PrintSourceRange(method->getSourceRange());
+      llvm::outs() << "\n :Parm [";
+      if (method->param_size()) {
+	linefeedflag = 0;
+	for (int i = 0; i < (int)method->param_size(); i++) {
+	  TraverseDecl(method->getParamDecl(i));
+	}
       }
+      llvm::outs() << "]\n :body [";
+      linefeedflag = 0;
+      linefeedbody = 0;
+      TraverseStmt(method->getBody());
+      llvm::outs() << "]}";
+    } else {
+      last_func = Decl->getQualifiedNameAsString();
+      QualType functype = Decl->getResultType();
+      llvm::outs() << "{:kind \"Funcdef\""
+		   << " :name " << "\"" << last_func << "\"";
+      checkSpecifier(Decl->getStorageClass());
+      PrintDisplayType(functype);
+      PrintTypeInfo(functype);
+      PrintSourceRange(Decl->getSourceRange());
+      llvm::outs() << "\n :Parm [";
+      if (Decl->param_size()) {
+	linefeedflag = 0;
+	for (int i = 0; i < (int)Decl->param_size(); i++) {
+	  TraverseDecl(Decl->getParamDecl(i));
+	}
+      }
+      llvm::outs() << "]\n :body [";
+      linefeedflag = 0;
+      linefeedbody = 0;
+      TraverseStmt(Decl->getBody());
+      llvm::outs() << "]}";
     }
-    llvm::outs() << "]\n :body [";
-    linefeedflag = 0;
-    linefeedbody = 0;
-    TraverseStmt(Decl->getBody());
-    llvm::outs() << "]}";
     return false;
   }
 
@@ -154,6 +221,7 @@ public:
     QualType vartype = Decl->getType();
     llvm::outs() << "{:kind \"Parm\"" 
 		 << " :name " << "\"" << varname  << "\"";
+    PrintDisplayType(vartype);
     PrintTypeInfo(vartype);
     PrintSourceRange(Decl->getSourceRange());
     llvm::outs() << "}";
@@ -167,22 +235,43 @@ public:
       recordkind = "\"Structdef\"";
     } else if (record->isUnion()) {
       recordkind = "\"Uniondef\"";
-    } else if (record->isClass()) {
-      recordkind = "\"Classdef\"";
+    } else if (record->isClass()) {//C++
+      CXXRecordDecl *cxxrecord = dyn_cast<CXXRecordDecl>(record);
+      llvm::outs() << "{:name " << "\"" << (std::string)record->getName() << "\"";
+      PrintSourceRange(record->getSourceRange()); 
+      llvm::outs() << "\n :Member [";
+      linefeedflag = 0;
+      if (!(record->field_empty())) {
+	RecordDecl::field_iterator itr = record->field_begin();
+	while (itr != record->field_end()) {
+	  TraverseDecl(itr->getCanonicalDecl());
+	  itr++;
+	} 
+      }
+      if (cxxrecord->method_begin() != cxxrecord->method_end()) {
+	CXXRecordDecl::method_iterator mitr = cxxrecord->method_begin();
+	while (mitr != cxxrecord->method_end()) {
+	  TraverseDecl(mitr->getCanonicalDecl());
+	  mitr++;
+	}
+      }
+      llvm::outs() << "]}";
     }
-    llvm::outs() << "{:kind " << recordkind
-		 << " :name " << "\"" << (std::string)record->getName() << "\"";
-    PrintSourceRange(record->getSourceRange()); 
-    llvm::outs() << "\n :Member [";
-    linefeedflag = 0;
-    if (!(record->field_empty())) {
-      RecordDecl::field_iterator itr = record->field_begin();
-      while (itr != record->field_end()) {
-	TraverseDecl(itr->getCanonicalDecl());
-	itr++;
-      } 
-    }
+    if (!(record->isClass())) {
+      llvm::outs() << "{:kind " << recordkind
+		   << " :name " << "\"" << (std::string)record->getName() << "\"";
+      PrintSourceRange(record->getSourceRange()); 
+      llvm::outs() << "\n :Member [";
+      linefeedflag = 0;
+      if (!(record->field_empty())) {
+	RecordDecl::field_iterator itr = record->field_begin();
+	while (itr != record->field_end()) {
+	  TraverseDecl(itr->getCanonicalDecl());
+	  itr++;
+	} 
+      }
     llvm::outs() << "]}";
+    }
     return false;
   }
 
@@ -199,6 +288,7 @@ public:
 		 << " :name " << "\"" << varname << "\"" 
 		 << " :scope " << (Decl->isFileVarDecl() == 1? "\"global\"":"\"local\"");
     checkSpecifier(Decl->getStorageClass());
+    PrintDisplayType(vartype);
     PrintTypeInfo(vartype);
     PrintSourceRange(Decl->getSourceRange());
     if (Decl->hasInit()) {
@@ -255,15 +345,28 @@ public:
     }
   }
   
+  // typeを文字列として出力
+  void PrintDisplayType(QualType typeInfo) {
+    if (labelflag != 0) {
+      os << " :displaytype " << "\"" << typeInfo.getAsString() << "\"";
+    } else {
+      llvm::outs() << " :displaytype " << "\"" << typeInfo.getAsString() << "\"";
+    }
+  }
+  
   // :typeの情報を出力
-  void PrintTypeInfo(QualType typeInfo) {   
+  void PrintTypeInfo(QualType typeInfo) {
+    firstrecord++;
     std::string Typename;
+    int flag = 0; // Unknwonの判定用
     if (dyn_cast<AutoType>(typeInfo)) {//c++{11/14}専用みたい...
+      flag = 1;
       llvm::outs() << " :Auto \"true\"";
       PrintQualifier(typeInfo);
       PrintTypeInfo(dyn_cast<AutoType>(typeInfo)->getDeducedType());
     }
     if (dyn_cast<TypedefType>(typeInfo)) {
+      flag = 1;
       TypedefNameDecl *TDtype = dyn_cast<TypedefType>(typeInfo)->getDecl();
       llvm::outs() << checkPointkey() 
 		   << " {:kind \"Typedef-type\"" 
@@ -273,6 +376,7 @@ public:
       llvm::outs() << "}";
     }
     if (dyn_cast<BuiltinType>(typeInfo)) {
+      flag = 1;
       switch (dyn_cast<BuiltinType>(typeInfo)->getKind()) {
       case BuiltinType::Void:
 	Typename = "Void";
@@ -327,6 +431,9 @@ public:
       case BuiltinType::WChar_U:
 	Typename = "WChar_t";
 	break;
+      case BuiltinType::Dependent:
+	Typename = "Dependent";
+	break;
       default:
 	Typename = "UnKnownError";
 	llvm::outs() << "\n \""<< typeInfo.getAsString() << "\"は, 初出です."
@@ -346,6 +453,7 @@ public:
       }
     }
     if (typeInfo->isArrayType()) {
+      flag = 1;
       QualType elmtype;
       if (dyn_cast<ArrayType>(typeInfo)) {
 	elmtype = dyn_cast<ArrayType>(typeInfo)->getElementType();
@@ -390,6 +498,7 @@ public:
       
     }
     if (typeInfo->isPointerType()) {
+      flag = 1;
       if (dyn_cast<PointerType>(typeInfo)) {
 	std::string key = checkPointkey();
 	pointflag = 1;
@@ -410,17 +519,17 @@ public:
       }
     }
     if (typeInfo->isStructureType()) {
+      flag = 1;
       if (labelflag != 0) {
 	if (dyn_cast<ElaboratedType>(typeInfo)) {
 	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  os << checkPointkey()
-	     << " {:kind \"Strucure-type\"";
-	  PrintQualifier(typeInfo);
 	  PrintTypeInfo(etype);
-	  os << "}";
 	} 
 	if (dyn_cast<RecordType>(typeInfo)) {
 	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	  os << checkPointkey()
+	     << " {:kind \"Structure-type\"";
+	  PrintQualifier(typeInfo);
 	  os << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
 	  if (rdecl->getName() == "") {
 	    os << "\n :member[";
@@ -434,17 +543,17 @@ public:
 	    }
 	    os << "]";
 	  }
+	  os << "}";
 	}
       } else {
 	if (dyn_cast<ElaboratedType>(typeInfo)) {
 	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  llvm::outs() << checkPointkey()
-		       << " {:kind \"Strucure-type\"";
-	  PrintQualifier(typeInfo);
 	  PrintTypeInfo(etype);
-	  llvm::outs() << "}";
 	} 
 	if (dyn_cast<RecordType>(typeInfo)) {
+	  llvm::outs() << checkPointkey()
+		       << " {:kind \"Structure-type\"";
+	  PrintQualifier(typeInfo);
 	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
 	  llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";  
 	  if (rdecl->getName() == "") {
@@ -459,21 +568,22 @@ public:
 	    }
 	    llvm::outs() << "]";
 	  }
+	  llvm::outs() << "}";
 	}
       }
     }
     if (typeInfo->isUnionType()) {
+      flag = 1;
       if (labelflag != 0) {
 	if (dyn_cast<ElaboratedType>(typeInfo)) {
 	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  os << checkPointkey()
-	     << " {:kind \"Union-type\"";
-	  PrintQualifier(typeInfo);
 	  PrintTypeInfo(etype);
-	  os << "}";
 	} 
 	if (dyn_cast<RecordType>(typeInfo)) {
 	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	  os << checkPointkey()
+	     << " {:kind \"Union-type\"";
+	  PrintQualifier(typeInfo);
 	  os << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
 	  if (rdecl->getName() == "") {
 	    os << "\n :member[";
@@ -487,18 +597,18 @@ public:
 	    }
 	    os << "]";
 	  }
+	  os << "}";
 	}
       } else {
 	if (dyn_cast<ElaboratedType>(typeInfo)) {
 	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  llvm::outs() << checkPointkey()
-		       << " {:kind \"Union-type\"";
-	  PrintQualifier(typeInfo);
 	  PrintTypeInfo(etype);
-	  llvm::outs() << "}";
 	} 
 	if (dyn_cast<RecordType>(typeInfo)) {
 	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	  llvm::outs() << checkPointkey()
+		       << " {:kind \"Union-type\"";
+	  PrintQualifier(typeInfo);
 	  llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";
 	  if (rdecl->getName() == "") {
 	    llvm::outs() << "\n :member[";
@@ -512,10 +622,16 @@ public:
 	    }
 	    llvm::outs() << "]";
 	  }
+	  llvm::outs() << "}";
 	}
       }
     }
-    
+    if (flag == 0) {
+      llvm::outs() << checkPointkey()
+		   << "{:kind \"Unknown-type\""
+		   << " :typeString " << "\"" << typeInfo.getAsString() << "\"}";
+    }
+    firstrecord = 0;
     //llvm::outs()  << " " << typeInfo->getTypeClassName();
   }
   
@@ -686,6 +802,10 @@ public:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::ImplicitCastExprClass:
+	if (dyn_cast<ImplicitCastExpr>(stmt)->getSubExpr()->getStmtClass() == 68) {
+	  llvm::outs() << "{:kind \"NULL\" :value \"Null\"}";
+	  break;
+	}
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       case Stmt::InitListExprClass:
@@ -770,13 +890,47 @@ public:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
 	//以下C++に関係
+      case Stmt::CXXNewExprClass:
+      case Stmt::CXXUnresolvedConstructExprClass:
+      case Stmt::ParenListExprClass:
+	llvm::outs() << "[";
+	RecursiveASTVisitor::TraverseStmt(stmt);
+	llvm::outs() << "]";
+	break;
+      case Stmt::CXXCatchStmtClass:
+      case Stmt::CXXTryStmtClass:
+      case Stmt::NullStmtClass:
+      case Stmt::AtomicExprClass:
+      case Stmt::CXXBindTemporaryExprClass:
+      case Stmt::CXXBoolLiteralExprClass:
+      case Stmt::CXXConstCastExprClass:
+      case Stmt::CXXConstructExprClass:
+      case Stmt::CXXDeleteExprClass:
+      case Stmt::CXXDependentScopeMemberExprClass:
+      case Stmt::CXXDynamicCastExprClass:
+      case Stmt::CXXFunctionalCastExprClass:
+      case Stmt::CXXMemberCallExprClass:
       case Stmt::CXXOperatorCallExprClass:
+      case Stmt::CXXPseudoDestructorExprClass:
+      case Stmt::CXXReinterpretCastExprClass:
+      case Stmt::CXXScalarValueInitExprClass:
+      case Stmt::CXXStaticCastExprClass:
+      case Stmt::CXXThisExprClass:
+      case Stmt::CXXThrowExprClass:
+      case Stmt::DependentScopeDeclRefExprClass:
+      case Stmt::GNUNullExprClass:
+      case Stmt::MaterializeTemporaryExprClass:
+      case Stmt::UnaryTypeTraitExprClass:
+      case Stmt::UnresolvedLookupExprClass:
+      case Stmt::UnresolvedMemberExprClass:
+      case Stmt::ConditionalOperatorClass:
+      case Stmt::ExprWithCleanupsClass:
+	//llvm::outs() << "?Stmt? " << stmt->getStmtClassName();	
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
       default:
-	llvm::outs() << "[Stmt " << stmt->getStmtClassName();	
+	llvm::outs() << "?Stmt? " << stmt->getStmtClassName();	
 	RecursiveASTVisitor::TraverseStmt(stmt);
-	llvm::outs() << "]";
       }
       //llvm::outs() << "\nleave " << stmt->getStmtClassName() << "\n";
     }
@@ -785,7 +939,67 @@ public:
   bool shouldUseDataRecursionFor(Stmt* S) const {
     return false;
   }
- 
+  
+  // CXXBoolLiteralExpr
+  bool VisitCXXBoolLiteralExpr(CXXBoolLiteralExpr *cxxbool) {
+    llvm::outs() << "\"" << cxxbool->getValue() << "\"";
+    return true;
+  }
+  
+  // CXXConstructExpr
+  bool VisitCXXConstructExpr(CXXConstructExpr *cxxconst) {
+    llvm::outs() << "{:kind \"Unknown\"}";
+    return false;
+  }
+
+  // CXXDependentScopeMemberExpr
+  bool VisitCXXDependentScopeMemberExpr(CXXDependentScopeMemberExpr *cxxdsm) {
+    llvm::outs() << "{:kind \"Unknown\"}";
+    return false;
+  }
+
+  // CXXNewExpr
+  bool VisitCXXNewExpr(CXXNewExpr *cxxnew) {
+    return false;
+  }
+
+  // CXXThisExpr
+  bool VisitCXXThisExpr(CXXThisExpr *cxxthis) {
+    llvm::outs() << "{:kind \"Unknown-Expr\"}";
+    return true;
+  }
+
+  // DependentScopeDeclRefExpr
+  bool VisitDependentScopeDeclRefExpr(DependentScopeDeclRefExpr *dsDRE) {
+    llvm::outs() << "{:kind \"Unknown\""
+		 << " :name \"" << dsDRE->getDeclName().getAsString() << "\"";
+    PrintSourceRange(dsDRE->getSourceRange());
+    llvm::outs() << "}";
+    return false;
+  }
+  
+  // UnaryTypeTraitExpr
+  bool VisitUnaryTypeTraitExpr(UnaryTypeTraitExpr *utte) {
+    llvm::outs() << "{:kind \"Unknown\"}";
+    return true;
+  }
+  
+  // UnresolvedLookupExpr
+  bool VisitUnresolvedLookupExpr(UnresolvedLookupExpr *ulexpr) {
+    llvm::outs() << "{:kind \"Unknown\"" 
+		 << " :name \"" << ulexpr->getName() << "\"";
+    PrintSourceRange(ulexpr->getSourceRange());
+    llvm::outs() << "}";
+    return false;
+  }
+  
+  // UnresolvedMemberExpr
+  bool VisitUnresolvedMemberExpr(UnresolvedMemberExpr *umemexpr) {
+    TraverseStmt(umemexpr->getBase());
+    return true;
+  }
+
+  //
   // BreakStmt
   bool VisitBreakStmt(BreakStmt *Break) {
     llvm::outs()  << "{:kind \"Break\"";
@@ -861,7 +1075,11 @@ public:
     TraverseStmt(For->getInit());
     llvm::outs() << "]\n :condition ";
     linefeedflag = 0;
-    TraverseStmt(For->getCond());
+    if (For->getCond() == NULL) {
+      llvm::outs() << "[]";
+    } else {
+      TraverseStmt(For->getCond());
+    }
     llvm::outs() << "\n :update [";
     linefeedflag = 0;
     TraverseStmt(For->getInc());
@@ -985,7 +1203,8 @@ public:
     QualType calltype = call->getType();
     llvm::outs() << "{:kind \"FuncCall\"";
     PrintSourceRange(call->getSourceRange());
-    checkLabel(); 
+    checkLabel();
+    PrintDisplayType(calltype);
     PrintTypeInfo(calltype);
     llvm::outs() << "\n :Func ";
     linefeedflag = 0;
@@ -1005,6 +1224,9 @@ public:
 
   // DeclRefExpr(DRE)
   bool VisitDeclRefExpr(DeclRefExpr *Declref) {
+    if (Declref->hasTemplateKWAndArgsInfo()) {
+      llvm::outs() << Declref->getNameInfo();
+    }
     ValueDecl *valuedecl = Declref->getDecl();
     VarDecl *vardecl = dyn_cast<VarDecl>(valuedecl);
     FunctionDecl *funcdecl = dyn_cast<FunctionDecl>(valuedecl);
@@ -1018,6 +1240,7 @@ public:
 	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\""
 	   << " :scope " << "\"" << scope << "\"";
 	checkSpecifier(vardecl->getStorageClass());
+	PrintDisplayType(vartype);
 	PrintTypeInfo(vartype);
 	PrintSourceRange(Declref->getSourceRange());
 	os << "}";
@@ -1027,8 +1250,18 @@ public:
 	os << "{:kind \"DRE\"" 
 	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\"";
 	checkSpecifier(funcdecl->getStorageClass());
+	PrintDisplayType(functype);
 	PrintTypeInfo(functype);
 	PrintSourceRange(Declref->getSourceRange());
+	os << "}";
+      } else {
+	QualType Declreftype = Declref->getType();
+	os << "{:kind \"DRE\"" 
+	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\"";
+	PrintDisplayType(Declreftype);
+	PrintTypeInfo(Declreftype);
+	PrintSourceRange(Declref->getSourceRange());
+	checkLabel(); 
 	os << "}";
       }
     } else {
@@ -1040,6 +1273,7 @@ public:
 		     << " :name " << "\"" << Declref->getNameInfo() << "\""
 		     << " :scope " << "\"" << scope << "\"";
 	checkSpecifier(vardecl->getStorageClass());
+	PrintDisplayType(vartype);
 	PrintTypeInfo(vartype);
 	PrintSourceRange(Declref->getSourceRange());
 	checkLabel(); 
@@ -1050,7 +1284,17 @@ public:
 	llvm::outs() << "{:kind \"DRE\"" 
 		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
 	checkSpecifier(funcdecl->getStorageClass());
+	PrintDisplayType(functype);
 	PrintTypeInfo(functype);
+	PrintSourceRange(Declref->getSourceRange());
+	checkLabel(); 
+	llvm::outs() << "}";
+      } else {
+	QualType Declreftype = Declref->getType();
+	llvm::outs() << "{:kind \"DRE\"" 
+		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
+	PrintDisplayType(Declreftype);
+	PrintTypeInfo(Declreftype);
 	PrintSourceRange(Declref->getSourceRange());
 	checkLabel(); 
 	llvm::outs() << "}";
@@ -1063,6 +1307,11 @@ public:
   bool VisitMemberExpr(MemberExpr *mem) {
     Expr *base = mem->getBase();
     ValueDecl *vdecl = mem->getMemberDecl();
+    if (mem->isLValue() || mem->isRValue()) {// c++ 
+      linefeedflag = 0;
+      TraverseDecl(mem->getMemberDecl());
+      return false; 
+    }
     if(mem->isArrow()) {
       llvm::outs() << "{:kind \"Binop\" :op \"->\"";
       PrintSourceRange(mem->getSourceRange());
@@ -1093,12 +1342,36 @@ public:
     llvm::outs() << "{:kind \"DRE\""
 		 << " :name " << "\"" << vdecl->getName() << "\"" 
 		 << " :scope \"member\"";
+    PrintDisplayType(vartype);
     PrintTypeInfo(vartype);
     PrintSourceRange(vdecl->getSourceRange());
     llvm::outs() << "}";
     return true;
   }
   
+  // UnaryExprOrTypeTraitExpr
+  bool VisitUnaryExprOrTypeTraitExpr(UnaryExprOrTypeTraitExpr *expr) {
+    switch(expr->getKind()) {
+    case UETT_SizeOf:
+      llvm::outs() << "{:kind \"SizeOf\"";
+      PrintTypeInfo(expr->getType());
+      if (expr->isArgumentType()) {
+	llvm::outs() << " :ArgumentType {";
+	PrintTypeInfo(expr->getArgumentType());
+	llvm::outs() << "}";
+      } else {
+	llvm::outs() << " :Argument ";
+	TraverseStmt(expr->getArgumentExpr());
+      }
+      PrintSourceRange(expr->getSourceRange());
+      llvm::outs() << "}";
+      return false;
+    default: 
+      break;
+    }
+    return true;
+  }
+
   // UnaryOperator
   bool VisitUnaryOperator(UnaryOperator *Unop) {
     UnaryOperator::Opcode opcode = Unop->getOpcode();
@@ -1123,8 +1396,12 @@ public:
     linefeedflag = 0;
     TraverseStmt(Binop->getLHS());
     llvm::outs() << "\n :RHS ";
-    linefeedflag = 0;
-    TraverseStmt(Binop->getRHS());
+    if (Binop->getRHS()->getStmtClass() == 68) {
+      llvm::outs() << "{:kind \"NULL\" :value \"Null\"}";
+    } else {
+      linefeedflag = 0;
+      TraverseStmt(Binop->getRHS());
+    }
     llvm::outs() << "}";
       
     return false;
@@ -1147,6 +1424,7 @@ public:
 	 << " :value " << "\"" << charL->getValue() << "\""
 	 << " :character " << "\"" << char(charL->getValue()) << "\"";
     }
+    PrintDisplayType(literaltype);
     PrintTypeInfo(literaltype);
     PrintSourceRange(literal->getSourceRange());
     os << "}}";
@@ -1164,7 +1442,8 @@ public:
       getLabelValue(Int);
     } else {
       llvm::outs() << "{:kind \"IntegerLiteral\""
-		   << " :value " << "\"" << Int->getValue() << "\"";
+		   << " :value " << Int->getValue();
+      PrintDisplayType(vartype);
       PrintTypeInfo(vartype);
       PrintSourceRange(Int->getSourceRange());
       llvm::outs() << "}";
@@ -1176,7 +1455,8 @@ public:
   bool VisitFloatingLiteral(FloatingLiteral *Float) {
     QualType vartype = Float->getType();
     llvm::outs() << "{:kind \"FloatingLiteral\""
-		 << " :value " << "\"" << Float->getValueAsApproximateDouble() << "\"";
+		 << " :value " << Float->getValueAsApproximateDouble();
+    PrintDisplayType(vartype);
     PrintTypeInfo(vartype);
     PrintSourceRange(Float->getSourceRange());
     llvm::outs() << "}";
@@ -1192,6 +1472,7 @@ public:
       llvm::outs() << "{:kind \"CharacterLiteral\""
 		   << " :value " << "\"" << Char->getValue() << "\""
 		   << " :character " << "\"" << char(Char->getValue()) << "\"";
+      PrintDisplayType(vartype);
       PrintTypeInfo(vartype);
       PrintSourceRange(Char->getSourceRange());
       llvm::outs() << "}";
@@ -1204,6 +1485,7 @@ public:
     QualType vartype = String->getType();
     llvm::outs() << "{:kind \"StringLiteral\""
 		 << " :value " << "\"" << String->getString().str() << "\"";
+    PrintDisplayType(vartype);
     PrintTypeInfo(vartype);
     PrintSourceRange(String->getSourceRange());
     llvm::outs() << "}";
@@ -1230,8 +1512,8 @@ public:
 	Context->getFullLoc(range.getEnd()).getSpellingLineNumber() <<
 	"]";
       // U>_<U
-      //llvm::outs() << " :Filename " << " \""
-      //	   << FullLocation.getManager().getFilename(FullLocation) << "\"";
+      llvm::outs() << " :Filename " << "\""
+		   << FullLocation.getManager().getFilename(FullLocation) << "\"";
     }
   }
 
@@ -1253,10 +1535,12 @@ private:
   unsigned paramsize;
   int ArraySub;
   int caseflag; // ラベルが付いている証
+  int firstrecord; // typeでrecordtypeが最初に出て来たか判断
   int FuncCall;
   int labelflag; // ラベル(case, default, label)が出現した印
   int linefeedbody;
   int linefeedflag;
+  int memflag; // 強引にfielddeclをdreとして扱うよう
   int pointflag;
 };
 
