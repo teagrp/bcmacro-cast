@@ -17,6 +17,7 @@
                   (clojure.java.io/reader rule-file))
         src-rdr (java.io.PushbackReader.
                  (clojure.java.io/reader (or src-file System/in)))]
+    #_(println "src-rdr:" src-rdr)
     (let [ast (cond
                 (or (.endsWith src-file ".c")
                     (.endsWith src-file ".cpp"))
@@ -24,9 +25,12 @@
                   (read-string
                    (:out (apply shell/sh cmd))))
                 
-                (or (.endsWith src-file ".ast")
+                (or (nil? src-file)
+                    (.endsWith src-file ".ast")
                     (.endsWith src-file ".out"))
-                (read src-rdr))]
+                (read src-rdr)
+                :else (throw (Exception. "src-file not supported.")))]
+      #_(println "ast:" ast)
       (eval (read rule-rdr))
       (when-let [rule-vars (get-rule-vars *ns*)]
         (bcexpand-all rule-vars ast)
