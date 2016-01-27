@@ -1,0 +1,14 @@
+
+[{:kind "Funcdef" :name "func" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Void-type"}}] :loc-begin ["/home/umatani/floatloop.c" 1 1] :loc-end ["/home/umatani/floatloop.c" 5 1]
+ :Parm []
+ :body [{:kind "For" :loc-begin ["/home/umatani/floatloop.c" 2 3] :loc-end ["/home/umatani/floatloop.c" 4 3]
+ :init [{:kind "Var" :name "x" :scope "local" :type [{:kind "Float-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 8] :loc-end ["/home/umatani/floatloop.c" 2 18]
+ :init {:kind "FloatingLiteral" :value 1.000000e-01 :type [{:kind "Float-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 18] :loc-end ["/home/umatani/floatloop.c" 2 18]}}]
+ :condition {:kind "Binop" :op "<=" :type [{:kind "Int-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 24] :loc-end ["/home/umatani/floatloop.c" 2 29]
+ :LHS {:kind "DRE" :name "x" :scope "local" :type [{:kind "Float-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 24] :loc-end ["/home/umatani/floatloop.c" 2 24]}
+ :RHS {:kind "FloatingLiteral" :value 1.000000e+00 :type [{:kind "Float-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 29] :loc-end ["/home/umatani/floatloop.c" 2 29]}}
+ :update [{:kind "Binop" :op "+=" :type [{:kind "Float-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 35] :loc-end ["/home/umatani/floatloop.c" 2 40]
+ :LHS {:kind "DRE" :name "x" :scope "local" :type [{:kind "Float-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 35] :loc-end ["/home/umatani/floatloop.c" 2 35]}
+ :RHS {:kind "FloatingLiteral" :value 1.000000e-01 :type [{:kind "Float-type"}] :loc-begin ["/home/umatani/floatloop.c" 2 40] :loc-end ["/home/umatani/floatloop.c" 2 40]}}]
+ :body []}]}] 
+
