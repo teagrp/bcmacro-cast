@@ -3,8 +3,6 @@
         bcmacro.core astgrep.rule)
   (:gen-class))
 
-
-
 ;; main function
 (defn -main
   "args: rule-file [src-file]
@@ -31,10 +29,16 @@
                 (read src-rdr)
                 :else (throw (Exception. "src-file not supported.")))]
       #_(println "ast:" ast)
-      (eval (read rule-rdr))
-      (when-let [rule-vars (get-rule-vars *ns*)]
-        (bcexpand-all rule-vars ast)
-        nil))))
+      #_(println "rule:" (read rule-rdr))
+      (binding [*ns* (create-ns 'astgrep.rule)]
+      #_(eval '(defrule plus-assign @{:kind "Binop" :op "+="}
+                    "Very bad!!!"))
+        (eval (read rule-rdr))
+        (when-let [rule-vars (get-rule-vars *ns*)]
+          (bcexpand-all rule-vars ast)
+          nil)))))
 
 #_(-main "src/astgrep/sample-rule.clj"
          "../samplecode/floatloop.out")
+
+	   
