@@ -31,14 +31,18 @@
       #_(println "ast:" ast)
       #_(println "rule:" (read rule-rdr))
       (binding [*ns* (create-ns 'astgrep.rule)]
-      #_(eval '(defrule plus-assign @{:kind "Binop" :op "+="}
-                    "Very bad!!!"))
-        (eval (read rule-rdr))
+        #_(eval '(defrule plus-assign @{:kind "Binop" :op "+="}
+                   "Very bad!!!"))
+        #_(eval (read rule-rdr))
+        (try (loop []
+               (eval (read rule-rdr))
+               (recur))
+             (catch RuntimeException e))
         (when-let [rule-vars (get-rule-vars *ns*)]
           (bcexpand-all rule-vars ast)
           nil)))))
 
-#_(-main "src/astgrep/sample-rule.clj"
+#_(-main "src/astgrep/sample_rule.clj"
          "../samplecode/floatloop.out")
 
 	   
