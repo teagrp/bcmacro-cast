@@ -1,7 +1,9 @@
-(defrule plus-assign @{:kind "Binop" :op "+="}
+(defrule plus-assign @{:loc-begin [$file $line $col]
+                       :kind "Binop" :op "+="}
   "Very bad!!!")
 
-(defrule le @{:kind "Binop" :op "<="}
+(defrule le @{:loc-begin [$file $line $col]
+              :kind "Binop" :op "<="}
   "bad!!!")
 
 #_(throw (RuntimeException. "foo"))

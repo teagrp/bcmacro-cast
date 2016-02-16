@@ -46,5 +46,3 @@
 
 #_(-main "src/astgrep/sample_rule.clj"
          "../samplecode/floatloop.out")
-
-	   
