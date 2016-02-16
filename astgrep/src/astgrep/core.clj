@@ -37,7 +37,9 @@
         (try (loop []
                (eval (read rule-rdr))
                (recur))
-             (catch RuntimeException e))
+             (catch RuntimeException e
+               (when-not (.startsWith (.getMessage e) "EOF")
+                 (throw e))))
         (when-let [rule-vars (get-rule-vars *ns*)]
           (bcexpand-all rule-vars ast)
           nil)))))
