@@ -1,14 +1,13 @@
-(defrule plus-assign @{:kind "Binop" 
-                       :op "=" 
-                       :LHS {:kind "DRE" 
-                             :type [{:kind "Pointer-type" 
-                                     :Pointee {:kind "Pointer-type" 
-                                               :Pointee {:kind "Int-type" :volatile "true"}}}]} 
+(defrule exp32 @{:kind "Binop" 
+                 :op "=" 
+                 :LHS {:kind "DRE" 
+                       :type [{:kind "Pointer-type" 
+                               :Pointee {:kind "Pointer-type" 
+                                         :Pointee {:volatile "true"}}}]} 
                        :RHS {:kind "Unop" 
                              :type [{:kind "Pointer-type" 
-                                     :Pointee {:kind "Pointer-type" :Pointee {:kind "Int-type"}}} 
+                                     :Pointee {:kind "Pointer-type" :Pointee {}}} 
                                     {:kind "Pointer-type" 
-                                     :Pointee {:kind "Pointer-type" :Pointee {:kind "Int-type"}}} 
-                                    {:kind "Pointer-type" :Pointee {:kind "Pointer-type"}}]
-                             }} 
-  `("Very bad!!! exp32") )
+                                     :Pointee {:kind "Pointer-type" :Pointee {}}} 
+                                    {:kind "Pointer-type" :Pointee {:kind "Pointer-type"}}]}} 
+"Very bad!!! exp32" )
