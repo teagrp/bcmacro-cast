@@ -1,0 +1,8 @@
+
+[{:kind "Funcdef" :name "f" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Void-type"}}] :loc-begin ["/home/nakamura/sample/exp44/sample1.c" 1 1] :loc-end ["/home/nakamura/sample/exp44/sample1.c" 4 1]
+ :Parm []
+ :body [{:kind "Var" :name "a" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp44/sample1.c" 2 3] :loc-end ["/home/nakamura/sample/exp44/sample1.c" 2 11]
+ :init {:kind "IntegerLiteral" :value 14 :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp44/sample1.c" 2 11] :loc-end ["/home/nakamura/sample/exp44/sample1.c" 2 11]}}
+{:kind "Var" :name "b" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp44/sample1.c" 3 3] :loc-end ["/home/nakamura/sample/exp44/sample1.c" 3 21]
+ :init {:kind "SizeOf" :type [{:kind "UnsignedLong-type"} {:kind "Int-type"}] :Argument {:kind "Unop" :op "++" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp44/sample1.c" 3 18] :loc-end ["/home/nakamura/sample/exp44/sample1.c" 3 19] :HS {:kind "DRE" :name "a" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp44/sample1.c" 3 18] :loc-end ["/home/nakamura/sample/exp44/sample1.c" 3 18]}} :loc-begin ["/home/nakamura/sample/exp44/sample1.c" 3 11] :loc-end ["/home/nakamura/sample/exp44/sample1.c" 3 21]}}]}] 
+

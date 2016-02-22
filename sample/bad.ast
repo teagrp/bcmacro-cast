@@ -1,0 +1,7 @@
+
+[{:kind "Funcdef" :name "main" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}] :loc-begin ["/home/nakamura/sample/bad.c" 1 1] :loc-end ["/home/nakamura/sample/bad.c" 4 1]
+ :Parm []
+ :body [{:kind "Var" :name "x" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/bad.c" 2 3] :loc-end ["/home/nakamura/sample/bad.c" 2 7]}{:kind "Binop" :op "+=" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/bad.c" 3 3] :loc-end ["/home/nakamura/sample/bad.c" 3 8]
+ :LHS {:kind "DRE" :name "x" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/bad.c" 3 3] :loc-end ["/home/nakamura/sample/bad.c" 3 3]}
+ :RHS {:kind "IntegerLiteral" :value 1 :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/bad.c" 3 8] :loc-end ["/home/nakamura/sample/bad.c" 3 8]}}]}] 
+

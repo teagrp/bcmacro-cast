@@ -1,0 +1,69 @@
+-I dalvik/libnativehelper/include/nativehelper
+-I frameworks/base/core/jni/android/graphics
+-I system/bluetooth/bluedroid/include
+-I hardware/libhardware/include/hardware
+-I hardware/libhardware_legacy/include/hardware_legacy
+-I frameworks/base/core/jni/../../include/ui
+-I frameworks/base/core/jni/../../include/utils
+-I external/skia/include/core
+-I external/skia/include/effects
+-I external/skia/include/images
+-I external/skia/src/ports
+-I external/skia/include/utils
+-I external/sqlite/dist
+-I external/sqlite/android
+-I external/expat/lib
+-I external/openssl/include
+-I external/tremor/Tremor
+-I external/icu4c/i18n
+-I external/icu4c/common
+-I external/jpeg
+-I frameworks/opt/emoji
+-I frameworks/base/core/jni
+-I out/target/product/generic/obj/SHARED_LIBRARIES/libandroid_runtime_intermediates
+-I dalvik/libnativehelper/include/nativehelper
+-I system/core/include
+-I hardware/libhardware/include
+-I hardware/libhardware_legacy/include
+-I hardware/ril/include
+-I dalvik/libnativehelper/include
+-I frameworks/base/include
+-I frameworks/base/opengl/include
+-I frameworks/base/native/include
+-I external/skia/include
+-I out/target/product/generic/obj/include
+-I bionic/libc/arch-arm/include
+-I bionic/libc/include
+-I bionic/libstdc++/include
+-I bionic/libc/kernel/common
+-I bionic/libc/kernel/arch-arm
+-I bionic/libm/include
+-I bionic/libm/include/arch/arm
+-I bionic/libthread_db/include
+
+-I system/core/include/arch/linux-arm/
+-I bionic/libc/private
+
+-I prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/lib/gcc/arm-eabi/4.4.3/include
+
+-include system/core/include/arch/linux-arm/AndroidConfig.h
+
+-D__ARM_ARCH_5__
+-D__ARM_ARCH_5T__
+-D__ARM_ARCH_5E__
+-D__ARM_ARCH_5TE__
+-DANDROID
+-DNDEBUG
+-DHAVE_CONFIG_H
+-DKHTML_NO_EXCEPTIONS
+-DGKWQ_NO_JAVA
+-DNO_SUPPORT_JS_BINDING
+-DQT_NO_WHEELEVENT
+-DKHTML_NO_XBL
+-U__APPLE__
+-DPACKED=__attribute__\(\(packed\)\)
+-DWITH_JIT
+-DGL_GLEXT_PROTOTYPES
+-DEGL_EGLEXT_PROTOTYPES
+
+-W0

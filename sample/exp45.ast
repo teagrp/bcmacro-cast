@@ -1,0 +1,17 @@
+
+[{:kind "Funcdef" :name "f" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Void-type"}}] :loc-begin ["/home/nakamura/sample/exp45.c" 1 1] :loc-end ["/home/nakamura/sample/exp45.c" 9 1]
+ :Parm []
+ :body [{:kind "Var" :name "a" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 2 3] :loc-end ["/home/nakamura/sample/exp45.c" 2 11]
+ :init {:kind "IntegerLiteral" :value 10 :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 2 11] :loc-end ["/home/nakamura/sample/exp45.c" 2 11]}}
+{:kind "Var" :name "b" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 3 3] :loc-end ["/home/nakamura/sample/exp45.c" 3 11]
+ :init {:kind "IntegerLiteral" :value 20 :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 3 11] :loc-end ["/home/nakamura/sample/exp45.c" 3 11]}}
+{:kind "If" :loc-begin ["/home/nakamura/sample/exp45.c" 5 3] :loc-end ["/home/nakamura/sample/exp45.c" 7 3]
+ :condition {:kind "Binop" :op "=" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 5 7] :loc-end ["/home/nakamura/sample/exp45.c" 5 11]
+ :LHS {:kind "DRE" :name "a" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 5 7] :loc-end ["/home/nakamura/sample/exp45.c" 5 7]}
+ :RHS {:kind "DRE" :name "b" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 5 11] :loc-end ["/home/nakamura/sample/exp45.c" 5 11]}}
+ :then [{:kind "Binop" :op "=" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 6 5] :loc-end ["/home/nakamura/sample/exp45.c" 6 13]
+ :LHS {:kind "DRE" :name "a" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 6 5] :loc-end ["/home/nakamura/sample/exp45.c" 6 5]}
+ :RHS {:kind "Binop" :op "+" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 6 9] :loc-end ["/home/nakamura/sample/exp45.c" 6 13]
+ :LHS {:kind "DRE" :name "a" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 6 9] :loc-end ["/home/nakamura/sample/exp45.c" 6 9]}
+ :RHS {:kind "DRE" :name "b" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp45.c" 6 13] :loc-end ["/home/nakamura/sample/exp45.c" 6 13]}}}]}]}] 
+
