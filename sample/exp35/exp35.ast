@@ -1,0 +1,20 @@
+
+[{:kind "Structdef" :name "X" :loc-begin ["/home/ayato/exp35-2/exp35.c" 1 1] :loc-end ["/home/ayato/exp35-2/exp35.c" 1 22]
+ :Member [{:kind "Field" :name "a" :scope "member" :type [{:kind "Array-type" :ArraySize "6" :type {:kind "Int-type"}}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 1 12] :loc-end ["/home/ayato/exp35-2/exp35.c" 1 19]}]}
+{:kind "Funcdef" :name "addressee" :type [{:kind "Func-type" :ParmsType [] :type {:kind "Structure-type" :name "X"}}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 3 1] :loc-end ["/home/ayato/exp35-2/exp35.c" 6 1]
+ :Parm []
+ :body [{:kind "Var" :name "result" :scope "local" :type [ :type {:kind "Structure-type" :name "X"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 4 3] :loc-end ["/home/ayato/exp35-2/exp35.c" 4 40]
+ :init [{:kind "IntegerLiteral" :value 1 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 4 23] :loc-end ["/home/ayato/exp35-2/exp35.c" 4 23]}{:kind "IntegerLiteral" :value 2 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 4 26] :loc-end ["/home/ayato/exp35-2/exp35.c" 4 26]}{:kind "IntegerLiteral" :value 3 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 4 29] :loc-end ["/home/ayato/exp35-2/exp35.c" 4 29]}{:kind "IntegerLiteral" :value 4 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 4 32] :loc-end ["/home/ayato/exp35-2/exp35.c" 4 32]}{:kind "IntegerLiteral" :value 5 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 4 35] :loc-end ["/home/ayato/exp35-2/exp35.c" 4 35]}{:kind "IntegerLiteral" :value 6 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 4 38] :loc-end ["/home/ayato/exp35-2/exp35.c" 4 38]}]}
+{:kind "Ret" :loc-begin ["/home/ayato/exp35-2/exp35.c" 5 3] :loc-end ["/home/ayato/exp35-2/exp35.c" 5 10] :value {:kind "DRE" :name "result" :scope "local" :type [ :type {:kind "Structure-type" :name "X"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 5 10] :loc-end ["/home/ayato/exp35-2/exp35.c" 5 10]}}]}
+{:kind "Funcdef" :name "main" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 8 1] :loc-end ["/home/ayato/exp35-2/exp35.c" 11 1]
+ :Parm []
+ :body [{:kind "FuncCall" :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 3] :loc-end ["/home/ayato/exp35-2/exp35.c" 9 36]
+ :Func [{:kind "DRE" :name "printf" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Int-type"}}}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 3] :loc-end ["/home/ayato/exp35-2/exp35.c" 9 3]}]
+ :Parm [{:kind "StringLiteral" :value "%x" :type [{:kind "Array-type" :ArraySize "3" :type {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 10] :loc-end ["/home/ayato/exp35-2/exp35.c" 9 10]}
+{:kind "Unop" :op "++" :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 16] :loc-end ["/home/ayato/exp35-2/exp35.c" 9 35] :HS {:kind "ArrayRef" :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 19] :loc-end ["/home/ayato/exp35-2/exp35.c" 9 34]
+ :Array [
+{:kind "Field" :name "a" :scope "member" :type [{:kind "Array-type" :ArraySize "6" :type {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 1 12] :loc-end ["/home/ayato/exp35-2/exp35.c" 1 19]}]
+ :Index {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 33] :loc-end ["/home/ayato/exp35-2/exp35.c" 9 33]}}}]}
+{:kind "Ret" :loc-begin ["/home/ayato/exp35-2/exp35.c" 10 3] :loc-end ["/home/ayato/exp35-2/exp35.c" 10 10] :value {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/ayato/exp35-2/exp35.c" 10 10] :loc-end ["/home/ayato/exp35-2/exp35.c" 10 10]}}]}
+] 
+
