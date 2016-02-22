@@ -1,0 +1,31 @@
+
+[{:kind "Structdef" :name "X" :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 1 1] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 1 21]
+ :Member [{:kind "Field" :name "b" :scope "member" :type [{:kind "Array-type" :ArraySize "4" :type {:kind "Int-type"}}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 1 12] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 1 19]}]}
+{:kind "Funcdef" :name "f" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 3 1] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 9 1]
+ :Parm []
+ :body [{:kind "Var" :name "a" :scope "local" :type [{:kind "Array-type" :ArraySize "3" :type {:kind "Int-type"}}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 4 3] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 4 10]}
+{:kind "Var" :name "c" :scope "local" :type [ :type {:kind "Structure-type" :name "X"}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 5 3] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 5 12]}
+{:kind "Unop" :op "++" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 3] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 7] :HS {:kind "ArrayRef" :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 3] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 6]
+ :Array [{:kind "DRE" :name "a" :scope "local" :type [{:kind "Array-type" :ArraySize "3" :type {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 3] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 3]}]
+ :Index {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 5] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 6 5]}}}
+
+{:kind "Unop" :op "++"
+ :type [{:kind "Int-type"}]
+ :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 7 3]
+ :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 7 9]
+ :HS {:kind "ArrayRef" :type [{:kind "Int-type"}]
+      :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 7 3]
+      :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 7 8]
+      :Array [{:kind "Field" :name "b" :scope "member"
+               :type [{:kind "Array-type" :ArraySize "4"
+                       :type {:kind "Int-type"}}
+                     {:kind "Pointer-type" :Pointee {:kind "Int-type"}}]
+               :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 1 12]
+               :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 1 19]}]
+      :Index {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}]
+              :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 7 7]
+              :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 7 7]}}}
+
+        
+{:kind "Ret" :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 8 3] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 8 10] :value {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 8 10] :loc-end ["/home/nakamura/bcmacro-cast/sample/exp35/test.c" 8 10]}}]}] 
+
