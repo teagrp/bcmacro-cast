@@ -1,17 +1,27 @@
 
-[{:kind "Funcdef" :name "main" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}] :loc-begin ["/home/kasutani/exp31/exp31.c" 1 1] :loc-end ["/home/kasutani/exp31/exp31.c" 6 1]
+[{:kind "Funcdef" :name "main" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 1 1] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 8 1]
  :Parm []
- :body [{:kind "Var" :name "index" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 2 3] :loc-end ["/home/kasutani/exp31/exp31.c" 2 7]}
-{:kind "Var" :name "i" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 3 3] :loc-end ["/home/kasutani/exp31/exp31.c" 3 7]}
-{:kind "FuncCall" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 4 3] :loc-end ["/home/kasutani/exp31/exp31.c" 4 21]
- :Func [{:kind "DRE" :name "assert" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}}] :loc-begin ["/home/kasutani/exp31/exp31.c" 4 3] :loc-end ["/home/kasutani/exp31/exp31.c" 4 3]}]
- :Parm [{:kind "Binop" :op ">" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 4 10] :loc-end ["/home/kasutani/exp31/exp31.c" 4 20]
- :LHS {:kind "Unop" :op "--" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 4 10] :loc-end ["/home/kasutani/exp31/exp31.c" 4 15] :HS {:kind "DRE" :name "index" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 4 10] :loc-end ["/home/kasutani/exp31/exp31.c" 4 10]}}
- :RHS {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 4 20] :loc-end ["/home/kasutani/exp31/exp31.c" 4 20]}}]}
-{:kind "FuncCall" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 5 3] :loc-end ["/home/kasutani/exp31/exp31.c" 5 17]
- :Func [{:kind "DRE" :name "assert" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}}] :loc-begin ["/home/kasutani/exp31/exp31.c" 5 3] :loc-end ["/home/kasutani/exp31/exp31.c" 5 3]}]
- :Parm [{:kind "Binop" :op "<" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 5 10] :loc-end ["/home/kasutani/exp31/exp31.c" 5 16]
- :LHS {:kind "Unop" :op "++" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 5 10] :loc-end ["/home/kasutani/exp31/exp31.c" 5 11] :HS {:kind "DRE" :name "i" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 5 10] :loc-end ["/home/kasutani/exp31/exp31.c" 5 10]}}
- :RHS {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/exp31/exp31.c" 5 16] :loc-end ["/home/kasutani/exp31/exp31.c" 5 16]}}]}]}
+ :body [{:kind "Var" :name "index" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 2 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 2 7]}
+{:kind "Var" :name "i" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 3 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 3 7]}
+{:kind "FuncCall" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 4 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 4 21]
+ :Func [{:kind "DRE" :name "assert" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 4 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 4 3]}]
+ :Parm [{:kind "Binop" :op ">" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 4 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 4 20]
+ :LHS {:kind "Unop" :op "++" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 4 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 4 15] :HS {:kind "DRE" :name "index" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 4 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 4 10]}}
+ :RHS {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 4 20] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 4 20]}}]}
+{:kind "FuncCall" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 5 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 5 21]
+ :Func [{:kind "DRE" :name "assert" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 5 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 5 3]}]
+ :Parm [{:kind "Binop" :op "<" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 5 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 5 20]
+ :LHS {:kind "Unop" :op "--" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 5 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 5 15] :HS {:kind "DRE" :name "index" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 5 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 5 10]}}
+ :RHS {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 5 20] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 5 20]}}]}
+{:kind "FuncCall" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 6 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 6 20]
+ :Func [{:kind "DRE" :name "assert" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 6 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 6 3]}]
+ :Parm [{:kind "Binop" :op "+=" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 6 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 6 19]
+ :LHS {:kind "DRE" :name "index" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 6 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 6 10]}
+ :RHS {:kind "IntegerLiteral" :value 3 :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 6 19] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 6 19]}}]}
+{:kind "FuncCall" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 7 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 7 20]
+ :Func [{:kind "DRE" :name "assert" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 7 3] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 7 3]}]
+ :Parm [{:kind "Binop" :op "-=" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 7 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 7 19]
+ :LHS {:kind "DRE" :name "index" :scope "local" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 7 10] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 7 10]}
+ :RHS {:kind "IntegerLiteral" :value 3 :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp31/exp31.c" 7 19] :loc-end ["/home/kasutani/sample/exp31/exp31.c" 7 19]}}]}]}
 ] 
 
