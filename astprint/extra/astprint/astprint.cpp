@@ -309,6 +309,7 @@ public:
 		 << " :name " << "\"" << varname << "\"" 
 		 << " :scope " << (Decl->isFileVarDecl() == 1? "\"global\"":"\"local\"");
     checkSpecifier(Decl->getStorageClass());
+    PrintDisplayType(vartype);
     llvm::outs() << " :type [";
     firsttype = 0;
     PrintTypeInfo(vartype);
@@ -396,15 +397,15 @@ public:
   }
   
   // typeを文字列として出力
-  /** 
+  
   void PrintDisplayType(QualType typeInfo) {
     if (labelflag != 0 || castflag != 0) {
-      os << " :displaytype " << "\"" << typeInfo.getAsString() << "\"";
+      os << " :DisplayType " << "\"" << typeInfo.getAsString() << "\"";
     } else {
-      llvm::outs() << " :displaytype " << "\"" << typeInfo.getAsString() << "\"";
+      llvm::outs() << " :DisplayType " << "\"" << typeInfo.getAsString() << "\"";
     }
   }
-  **/
+ 
   
   // :typeの情報を出力
   void PrintTypeInfo(QualType typeInfo) {
@@ -660,8 +661,9 @@ public:
 	    TraverseStmt(vaexpr);
 	  }
 	  PrintQualifier(typeInfo);
+	  os << " :type [";
 	  PrintTypeInfo(elmtype);
-	  os << "}";
+	  os << "]}";
 	  caselabel += os.str();
 	  os.str("");
 	  os.clear();
@@ -679,8 +681,9 @@ public:
 	    TraverseStmt(vaexpr);
 	  }
 	  PrintQualifier(typeInfo);
+	  cast << " :type [";
 	  PrintTypeInfo(elmtype);
-	  cast << "}";
+	  cast << "]}";
 	  castlabel += cast.str();
 	  cast.str("");
 	  cast.clear();
@@ -698,12 +701,13 @@ public:
 	    TraverseStmt(vaexpr);
 	  }
 	  PrintQualifier(typeInfo);
+	  llvm::outs() << " :type [";
 	  PrintTypeInfo(elmtype);
-	  llvm::outs() << "}";
+	  llvm::outs() << "]}";
 	}
       }
       if (dyn_cast<ParenType>(typeInfo)) {
-        elmtype = dyn_cast<ParenType>(typeInfo)->getInnerType();
+	elmtype = dyn_cast<ParenType>(typeInfo)->getInnerType();
 	PrintTypeInfo(elmtype);
       }
     }
@@ -801,6 +805,9 @@ public:
       } else {
 	if (dyn_cast<ElaboratedType>(typeInfo)) {
 	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	  if (firsttype == 1) { 
+	    firsttype = 0;
+	  }
 	  PrintTypeInfo(etype);
 	} 
 	if (dyn_cast<RecordType>(typeInfo)) {
@@ -1581,6 +1588,7 @@ public:
 	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\""
 	   << " :scope " << "\"" << scope << "\"";
 	checkSpecifier(vardecl->getStorageClass());
+	PrintDisplayType(vartype);
 	os << " :type [";
 	firsttype = 0;
 	PrintTypeInfo(vartype);
@@ -1601,6 +1609,7 @@ public:
 	os << "{:kind \"DRE\"" 
 	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\"";
 	checkSpecifier(funcdecl->getStorageClass());
+	PrintDisplayType(functype);
 	os << " :type [";
 	firsttype = 0;
 	PrintTypeInfo(functype);
@@ -1619,6 +1628,7 @@ public:
 	QualType Declreftype = Declref->getType();
 	os << "{:kind \"DRE\"" 
 	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\"";
+	PrintDisplayType(Declreftype);
 	os << " :type [";
 	firsttype = 0;
 	PrintTypeInfo(Declreftype);
@@ -1643,6 +1653,7 @@ public:
 		     << " :name " << "\"" << Declref->getNameInfo() << "\""
 		     << " :scope " << "\"" << scope << "\"";
 	checkSpecifier(vardecl->getStorageClass());
+	PrintDisplayType(vartype);
 	llvm::outs() << " :type [";
 	firsttype = 0;
 	PrintTypeInfo(vartype);
@@ -1657,6 +1668,7 @@ public:
 	llvm::outs() << "{:kind \"DRE\"" 
 		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
 	checkSpecifier(funcdecl->getStorageClass());
+	PrintDisplayType(functype);
 	llvm::outs() << " :type [";
 	firsttype = 0;
 	PrintTypeInfo(functype);
@@ -1669,6 +1681,7 @@ public:
 	QualType Declreftype = Declref->getType();
 	llvm::outs() << "{:kind \"DRE\"" 
 		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
+	PrintDisplayType(Declreftype);
 	llvm::outs() << " :type [";
 	firsttype = 0;
 	PrintTypeInfo(Declreftype);
@@ -1703,9 +1716,24 @@ public:
   bool VisitMemberExpr(MemberExpr *mem) {
     Expr *base = mem->getBase();
     ValueDecl *vdecl = mem->getMemberDecl();
-    if (mem->isLValue() || mem->isRValue()) {// c++ 
+    QualType memtype = mem->getType();
+    if (mem->isLValue() || mem->isRValue()) {
+      llvm::outs() << "{:kind \"Field\""
+		   << " :name " << "\"" << vdecl->getName() << "\""
+		   << " :scope " << "\"member\"";
+      llvm::outs() << " :type [";
+      firsttype = 0;
+      PrintTypeInfo(memtype);
+      checkCast();
+      llvm::outs() << "]";
+      PrintSourceRange(mem->getSourceRange());
+      llvm::outs() << " :structvar ";
       linefeedflag = 0;
-      TraverseDecl(mem->getMemberDecl());
+      TraverseStmt(base);
+      llvm::outs() << "}";
+      
+      //linefeedflag = 0;
+      //TraverseDecl(mem->getMemberDecl());
       return false; 
     }
     if(mem->isArrow()) {
@@ -1724,7 +1752,7 @@ public:
       llvm::outs() << "}"; 
       return false;
     } 
-    return true;
+    return false;
   }
   bool getlhsArrow(Expr *base) {
     ImplicitCastExpr *imp = dyn_cast<ImplicitCastExpr>(base);
