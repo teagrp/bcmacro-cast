@@ -1718,18 +1718,19 @@ public:
     ValueDecl *vdecl = mem->getMemberDecl();
     QualType memtype = mem->getType();
     if (mem->isLValue() || mem->isRValue()) {
-      llvm::outs() << "{:kind \"Field\""
-		   << " :name " << "\"" << vdecl->getName() << "\""
-		   << " :scope " << "\"member\"";
+      llvm::outs() << "{:kind \"Struct\""
+		   << " :struct ";
+      linefeedflag = 0;
+      TraverseStmt(base);
+      llvm::outs() << " :structmember ";
+      linefeedflag = 0;
+      TraverseDecl(vdecl);
       llvm::outs() << " :type [";
       firsttype = 0;
       PrintTypeInfo(memtype);
       checkCast();
       llvm::outs() << "]";
       PrintSourceRange(mem->getSourceRange());
-      llvm::outs() << " :structvar ";
-      linefeedflag = 0;
-      TraverseStmt(base);
       llvm::outs() << "}";
       
       //linefeedflag = 0;
