@@ -6,6 +6,30 @@ struct X addressee(void) {
 }
 
 int main(void) {
-  printf("%x", ++(addressee().a[0]));
+  printf("%x", ++addressee().a[0]);
+  printf("%x", --addressee().a[0]);
+  printf("%x", addressee().a[0] + 3);
+  printf("%x", addressee().a[0] - 3);
+  printf("%x", addressee().a[0] * 3);
+  printf("%x", addressee().a[0] / 3);
+  printf("%x", addressee().a[0] % 3);
+  printf("%x", addressee().a[0] & 0xff00);
+  printf("%x", addressee().a[0] | 0xff00);
+  printf("%x", addressee().a[0] ^ 0xff00);
+  printf("%x", ~addressee().a[0]);
+  printf("%x", addressee().a[0] << 3);
+  printf("%x", addressee().a[0] >> 3);
+  printf("%x", addressee().a[0] = 3);
+  printf("%x", addressee().a[0] += 3);
+  printf("%x", addressee().a[0] -= 3);
+  printf("%x", addressee().a[0] *= 3);
+  printf("%x", addressee().a[0] /= 3);
+  printf("%x", addressee().a[0] %= 3);
+  printf("%x", addressee().a[0] &= 0xff00);
+  printf("%x", addressee().a[0] |= 0xff00);
+  printf("%x", addressee().a[0] ^= 0xff00);
+  printf("%x", addressee().a[0] <<= 3);
+  printf("%x", addressee().a[0] >>= 3);
+
   return 0;
 }

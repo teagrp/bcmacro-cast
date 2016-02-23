@@ -1,23 +1,121 @@
-(defrule plus-assign @{:kind "Unop" :op "++" 
-                       :HS {:kind "ArrayRef" 
-                            :Array [{:kind "Field" :scope "member" }]}
-                      }
-  `("Very bad!!! exp35") )
-(defrule exp35 @{:kind "Unop" :op "++"
-                 :type [{:kind "Int-type"}]
-                 :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 16]
-                 :loc-end ["/home/ayato/exp35-2/exp35.c" 9 35]
-                 :HS {:kind "ArrayRef" :type [{:kind "Int-type"}]
-                      :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 19] :loc-end ["/home/ayato/exp35-2/exp35.c" 9 34]
-                      :Array [{:kind "Field" :name "a" :scope "member"
-                               :type [{:kind "Array-type" :ArraySize "6"
-                                       :type {:kind "Int-type"}}
-                                      {:kind "Pointer-type" :Pointee {:kind "Int-type"}}]
-                               :loc-begin ["/home/ayato/exp35-2/exp35.c" 1 12]
-                               :loc-end ["/home/ayato/exp35-2/exp35.c" 1 19]}]
-                      :Index {:kind "IntegerLiteral" :value 0
-                              :type [{:kind "Int-type"}]
-                              :loc-begin ["/home/ayato/exp35-2/exp35.c" 9 33]
-                              :loc-end ["/home/ayato/exp35-2/exp35.c" 9 33]
-                              }}
-)
+(defrule exp35-1 @{:kind "Unop" 
+                   :op "++" 
+                   :HS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-1")
+(defrule exp35-2 @{:kind "Unop" 
+                   :op "--" 
+                   :HS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-2")
+(defrule exp35-3 @{:kind "Binop" 
+                   :op "+" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-3")
+(defrule exp35-4 @{:kind "Binop" 
+                   :op "-" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-4")
+(defrule exp35-5 @{:kind "Binop" 
+                   :op "*" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-5")
+(defrule exp35-6 @{:kind "Binop" 
+                   :op "/" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-6")
+(defrule exp35-7 @{:kind "Binop" 
+                   :op "%" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-7")
+(defrule exp35-8 @{:kind "Binop" 
+                   :op "&" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-8")
+(defrule exp35-9 @{:kind "Binop" 
+                   :op "|" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-9")
+(defrule exp35-10 @{:kind "Binop" 
+                   :op "^" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-10")
+(defrule exp35-11 @{:kind "Unop" 
+                   :op "~" 
+                   :HS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-11")
+(defrule exp35-12 @{:kind "Binop" 
+                   :op "<<" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-12")
+(defrule exp35-13 @{:kind "Binop" 
+                   :op ">>" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-13")
+(defrule exp35-14 @{:kind "Binop" 
+                   :op "=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-14")
+(defrule exp35-15 @{:kind "Binop" 
+                   :op "+=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-15")
+(defrule exp35-16 @{:kind "Binop" 
+                   :op "-=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-16")
+(defrule exp35-17 @{:kind "Binop" 
+                   :op "*=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-17")
+(defrule exp35-18 @{:kind "Binop" 
+                   :op "/=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-18")
+(defrule exp35-19 @{:kind "Binop" 
+                   :op "%=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-19")
+(defrule exp35-20 @{:kind "Binop" 
+                   :op "&=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-20")
+(defrule exp35-21 @{:kind "Binop" 
+                   :op "|=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-21")
+(defrule exp35-22 @{:kind "Binop" 
+                   :op "^=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-22")
+(defrule exp35-23 @{:kind "Binop" 
+                   :op "<<=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-23")
+(defrule exp35-24 @{:kind "Binop" 
+                   :op ">>=" 
+                   :LHS {:Array[{:struct{:kind "FuncCall"}}]}
+                  }
+  "exp35-24")
+
