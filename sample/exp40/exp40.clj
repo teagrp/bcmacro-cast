@@ -1,9 +1,8 @@
-(do
-  (defrule exp40a @{:kind "Binop" :op "="  :loc-begin loc
+  (defrule exp40a @{:kind "Binop" :op "=" 
                     :LHS {:type [{:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}}]}
                     :RHS {:HS {:type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}]}}}
-    `("Very badA!!!" ~loc))
+    "Very badA!!!")
   
   
-  (defrule exp40b @{:type [{:const "true"} ...] :loc-begin loc}
-  `("Very badB!!!" ~loc)))
+  (defrule exp40b @{:type [{:const "true"} ...]}
+  "Very badB!!!")

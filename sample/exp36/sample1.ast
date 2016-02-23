@@ -1,9 +1,9 @@
 
-[{:kind "Funcdef" :name "f" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Void-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample1.c" 1 1] :loc-end ["/home/nakamura/sample/exp36/sample1.c" 7 1]
+[{:kind "Funcdef" :name "f" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Void-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample1.c" 1 1] :loc-end ["/home/kasutani/sample/exp36/sample1.c" 7 1]
  :Parm []
- :body [{:kind "Var" :name "i_ptr" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample1.c" 2 3] :loc-end ["/home/nakamura/sample/exp36/sample1.c" 2 8]}
-{:kind "Var" :name "c" :scope "local" :type [{:kind "Char-type"}] :loc-begin ["/home/nakamura/sample/exp36/sample1.c" 3 3] :loc-end ["/home/nakamura/sample/exp36/sample1.c" 3 8]}
-{:kind "Binop" :op "=" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample1.c" 5 3] :loc-end ["/home/nakamura/sample/exp36/sample1.c" 5 19]
- :LHS {:kind "DRE" :name "i_ptr" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample1.c" 5 3] :loc-end ["/home/nakamura/sample/exp36/sample1.c" 5 3]}
- :RHS {:kind "Unop" :op "&" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample1.c" 5 18] :loc-end ["/home/nakamura/sample/exp36/sample1.c" 5 19] :HS {:kind "DRE" :name "c" :scope "local" :type [{:kind "Char-type"}] :loc-begin ["/home/nakamura/sample/exp36/sample1.c" 5 19] :loc-end ["/home/nakamura/sample/exp36/sample1.c" 5 19]}}}]}] 
+ :body [{:kind "Var" :name "i_ptr" :scope "local" :DisplayType "int *" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample1.c" 2 3] :loc-end ["/home/kasutani/sample/exp36/sample1.c" 2 8]}
+{:kind "Var" :name "c" :scope "local" :DisplayType "char" :type [{:kind "Char-type"}] :loc-begin ["/home/kasutani/sample/exp36/sample1.c" 3 3] :loc-end ["/home/kasutani/sample/exp36/sample1.c" 3 8]}
+{:kind "Binop" :op "=" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample1.c" 5 3] :loc-end ["/home/kasutani/sample/exp36/sample1.c" 5 19]
+ :LHS {:kind "DRE" :name "i_ptr" :scope "local" :DisplayType "int *" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample1.c" 5 3] :loc-end ["/home/kasutani/sample/exp36/sample1.c" 5 3]}
+ :RHS {:kind "Unop" :op "&" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample1.c" 5 18] :loc-end ["/home/kasutani/sample/exp36/sample1.c" 5 19] :HS {:kind "DRE" :name "c" :scope "local" :DisplayType "char" :type [{:kind "Char-type"}] :loc-begin ["/home/kasutani/sample/exp36/sample1.c" 5 19] :loc-end ["/home/kasutani/sample/exp36/sample1.c" 5 19]}}}]}] 
 

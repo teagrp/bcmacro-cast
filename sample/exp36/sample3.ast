@@ -1,15 +1,150 @@
 
-[{:kind "Funcdef" :name "main" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 3 1] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 14 1]
+[
+
+{:kind "Funcdef" :name "memccpy" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "Int-type"} {:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Void-type"}}}] :loc-begin ["/usr/include/string.h" 58 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type"}}] :loc-begin ["/usr/include/string.h" 58 23] :loc-end ["/usr/include/string.h" 58 40]}
+{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 58 48] :loc-end ["/usr/include/string.h" 58 71]}
+{:kind "Parm" :name "__c" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 59 9] :loc-end ["/usr/include/string.h" 59 13]}
+{:kind "Parm" :name "__n" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 59 18] :loc-end ["/usr/include/string.h" 59 25]}]
+ :body []}
+
+
+
+{:kind "Funcdef" :name "strcpy" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 129 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 129 22] :loc-end ["/usr/include/string.h" 129 39]}
+{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 129 47] :loc-end ["/usr/include/string.h" 129 70]}]
+ :body []}
+
+{:kind "Funcdef" :name "strcat" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 137 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 137 22] :loc-end ["/usr/include/string.h" 137 39]}
+{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 137 47] :loc-end ["/usr/include/string.h" 137 70]}]
+ :body []}
+
+{:kind "Funcdef" :name "strcmp" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 144 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s1" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 144 20] :loc-end ["/usr/include/string.h" 144 32]}
+{:kind "Parm" :name "__s2" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 144 38] :loc-end ["/usr/include/string.h" 144 50]}]
+ :body []}
+{:kind "Funcdef" :name "strcoll" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 151 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s1" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 151 21] :loc-end ["/usr/include/string.h" 151 33]}
+{:kind "Parm" :name "__s2" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 151 39] :loc-end ["/usr/include/string.h" 151 51]}]
+ :body []}
+{:kind "Structdef" :name "__locale_struct" :loc-begin ["/usr/include/xlocale.h" 27 9] :loc-end ["/usr/include/xlocale.h" 39 1]
+ :Member [{:kind "Field" :name "__locales" :scope "member" :type [{:kind "Array-type" :ArraySize "13" :type [ :type {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "__locale_data"}}]}] :loc-begin ["/usr/include/xlocale.h" 30 3] :loc-end ["/usr/include/xlocale.h" 30 37]}
+{:kind "Field" :name "__ctype_b" :scope "member" :type [{:kind "Pointer-type" :Pointee {:kind "UnsignedShort-type" :const "true"}}] :loc-begin ["/usr/include/xlocale.h" 33 3] :loc-end ["/usr/include/xlocale.h" 33 29]}
+{:kind "Field" :name "__ctype_tolower" :scope "member" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type" :const "true"}}] :loc-begin ["/usr/include/xlocale.h" 34 3] :loc-end ["/usr/include/xlocale.h" 34 14]}
+{:kind "Field" :name "__ctype_toupper" :scope "member" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type" :const "true"}}] :loc-begin ["/usr/include/xlocale.h" 35 3] :loc-end ["/usr/include/xlocale.h" 35 14]}
+{:kind "Field" :name "__names" :scope "member" :type [{:kind "Array-type" :ArraySize "13" :type [ :type {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}]}] :loc-begin ["/usr/include/xlocale.h" 38 3] :loc-end ["/usr/include/xlocale.h" 38 25]}]}
+{:kind "Funcdef" :name "strcoll_l" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Typedef-type" :typename "__locale_t" :type {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "__locale_struct"}}}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 166 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s1" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 166 23] :loc-end ["/usr/include/string.h" 166 35]}
+{:kind "Parm" :name "__s2" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 166 41] :loc-end ["/usr/include/string.h" 166 53]}
+{:kind "Parm" :name "__l" :type [{:kind "Typedef-type" :typename "__locale_t" :type {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "__locale_struct"}}}] :loc-begin ["/usr/include/string.h" 166 59] :loc-end ["/usr/include/string.h" 166 70]}]
+ :body []}{:kind "Funcdef" :name "strxfrm_l" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Int-type"} {:kind "Typedef-type" :typename "__locale_t" :type {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "__locale_struct"}}}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 169 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 169 26] :loc-end ["/usr/include/string.h" 169 32]}
+{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 169 40] :loc-end ["/usr/include/string.h" 169 52]}
+{:kind "Parm" :name "__n" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 169 59] :loc-end ["/usr/include/string.h" 169 66]}
+{:kind "Parm" :name "__l" :type [{:kind "Typedef-type" :typename "__locale_t" :type {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "__locale_struct"}}}] :loc-begin ["/usr/include/string.h" 170 5] :loc-end ["/usr/include/string.h" 170 16]}]
+ :body []}
+{:kind "Funcdef" :name "strdup" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 176 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 176 22] :loc-end ["/usr/include/string.h" 176 34]}]
+ :body []}
+
+{:kind "Funcdef" :name "strchr" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 236 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 236 22] :loc-end ["/usr/include/string.h" 236 34]}
+{:kind "Parm" :name "__c" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 236 39] :loc-end ["/usr/include/string.h" 236 43]}]
+ :body []}
+{:kind "Funcdef" :name "strrchr" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 263 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 263 23] :loc-end ["/usr/include/string.h" 263 35]}
+{:kind "Parm" :name "__c" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 263 40] :loc-end ["/usr/include/string.h" 263 44]}]
+ :body []}
+
+
+{:kind "Funcdef" :name "strpbrk" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 315 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 315 23] :loc-end ["/usr/include/string.h" 315 35]}
+{:kind "Parm" :name "__accept" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 315 40] :loc-end ["/usr/include/string.h" 315 52]}]
+ :body []}
+{:kind "Funcdef" :name "strstr" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 342 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__haystack" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 342 22] :loc-end ["/usr/include/string.h" 342 34]}
+{:kind "Parm" :name "__needle" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 342 46] :loc-end ["/usr/include/string.h" 342 58]}]
+ :body []}
+{:kind "Funcdef" :name "strtok" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 348 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 348 22] :loc-end ["/usr/include/string.h" 348 39]}
+{:kind "Parm" :name "__delim" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 348 44] :loc-end ["/usr/include/string.h" 348 67]}]
+ :body []}{:kind "Funcdef" :name "__strtok_r" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 354 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 354 26] :loc-end ["/usr/include/string.h" 354 43]}
+{:kind "Parm" :name "__delim" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 355 5] :loc-end ["/usr/include/string.h" 355 28]}
+{:kind "Parm" :name "__save_ptr" :type [{:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 356 5] :loc-end ["/usr/include/string.h" 356 23]}]
+ :body []}{:kind "Funcdef" :name "strtok_r" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 359 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 359 24] :loc-end ["/usr/include/string.h" 359 41]}
+{:kind "Parm" :name "__delim" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 359 46] :loc-end ["/usr/include/string.h" 359 69]}
+{:kind "Parm" :name "__save_ptr" :type [{:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 360 10] :loc-end ["/usr/include/string.h" 360 28]}]
+ :body []}
+{:kind "Funcdef" :name "strnlen" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Int-type"}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 406 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__string" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 406 24] :loc-end ["/usr/include/string.h" 406 36]}
+{:kind "Parm" :name "__maxlen" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 406 46] :loc-end ["/usr/include/string.h" 406 53]}]
+ :body []}
+{:kind "Funcdef" :name "strerror" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 413 1] :loc-end ["" 55 54]
+ :Parm [{:kind "Parm" :name "__errnum" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 413 24] :loc-end ["/usr/include/string.h" 413 28]}]
+ :body []}{:kind "Funcdef" :name "strerror_r" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Int-type"} {:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Int-type"}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 427 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__errnum" :type [{:kind "Int-type"}] :loc-begin ["" 428 8] :loc-end ["" 428 12]}
+{:kind "Parm" :name "__buf" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["" 428 22] :loc-end ["" 428 28]}
+{:kind "Parm" :name "__buflen" :type [{:kind "Int-type"}] :loc-begin ["" 428 35] :loc-end ["" 428 42]}]
+ :body []}{:kind "Funcdef" :name "strerror_l" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Int-type"} {:kind "Typedef-type" :typename "__locale_t" :type {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "__locale_struct"}}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 445 1] :loc-end ["" 55 54]
+ :Parm [{:kind "Parm" :name "__errnum" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 445 26] :loc-end ["/usr/include/string.h" 445 30]}
+{:kind "Parm" :name "__l" :type [{:kind "Typedef-type" :typename "__locale_t" :type {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "__locale_struct"}}}] :loc-begin ["/usr/include/string.h" 445 40] :loc-end ["/usr/include/string.h" 445 51]}]
+ :body []}{:kind "Funcdef" :name "__bzero" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type"}} {:kind "Int-type"}] :RetType {:kind "Void-type"}}] :loc-begin ["/usr/include/string.h" 451 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type"}}] :loc-begin ["/usr/include/string.h" 451 22] :loc-end ["/usr/include/string.h" 451 28]}
+{:kind "Parm" :name "__n" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 451 33] :loc-end ["/usr/include/string.h" 451 40]}]
+ :body []}{:kind "Funcdef" :name "bcopy" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Void-type"}} {:kind "Int-type"}] :RetType {:kind "Void-type"}}] :loc-begin ["/usr/include/string.h" 455 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 455 20] :loc-end ["/usr/include/string.h" 455 32]}
+{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type"}}] :loc-begin ["/usr/include/string.h" 455 39] :loc-end ["/usr/include/string.h" 455 45]}
+{:kind "Parm" :name "__n" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 455 53] :loc-end ["/usr/include/string.h" 455 60]}]
+ :body []}
+{:kind "Funcdef" :name "bcmp" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "Int-type"}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 462 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s1" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 462 18] :loc-end ["/usr/include/string.h" 462 30]}
+{:kind "Parm" :name "__s2" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 462 36] :loc-end ["/usr/include/string.h" 462 48]}
+{:kind "Parm" :name "__n" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 462 54] :loc-end ["/usr/include/string.h" 462 61]}]
+ :body []}
+{:kind "Funcdef" :name "index" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 489 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 489 21] :loc-end ["/usr/include/string.h" 489 33]}
+{:kind "Parm" :name "__c" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 489 38] :loc-end ["/usr/include/string.h" 489 42]}]
+ :body []}
+{:kind "Funcdef" :name "rindex" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 517 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 517 22] :loc-end ["/usr/include/string.h" 517 34]}
+{:kind "Parm" :name "__c" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 517 39] :loc-end ["/usr/include/string.h" 517 43]}]
+ :body []}{:kind "Funcdef" :name "ffs" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Int-type"}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 523 1] :loc-end ["/usr/include/string.h" 523 60]
+ :Parm [{:kind "Parm" :name "__i" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 523 17] :loc-end ["/usr/include/string.h" 523 21]}]
+ :body []}
+{:kind "Funcdef" :name "strcasecmp" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Int-type"}}] :loc-begin ["/usr/include/string.h" 534 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__s1" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 534 24] :loc-end ["/usr/include/string.h" 534 36]}
+{:kind "Parm" :name "__s2" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 534 42] :loc-end ["/usr/include/string.h" 534 54]}]
+ :body []}
+{:kind "Funcdef" :name "strsep" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Char-type"}}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 557 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__stringp" :type [{:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 557 22] :loc-end ["/usr/include/string.h" 557 40]}
+{:kind "Parm" :name "__delim" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 558 8] :loc-end ["/usr/include/string.h" 558 31]}]
+ :body []}{:kind "Funcdef" :name "strsignal" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 564 1] :loc-end ["" 55 54]
+ :Parm [{:kind "Parm" :name "__sig" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 564 25] :loc-end ["/usr/include/string.h" 564 29]}]
+ :body []}{:kind "Funcdef" :name "__stpcpy" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 567 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 567 24] :loc-end ["/usr/include/string.h" 567 41]}
+{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 567 49] :loc-end ["/usr/include/string.h" 567 72]}]
+ :body []}
+{:kind "Funcdef" :name "stpcpy" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 569 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 569 22] :loc-end ["/usr/include/string.h" 569 39]}
+{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 569 47] :loc-end ["/usr/include/string.h" 569 70]}]
+ :body []}{:kind "Funcdef" :name "__stpncpy" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}} {:kind "Int-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Char-type"}}}] :loc-begin ["/usr/include/string.h" 574 1] :loc-end ["" 286 63]
+ :Parm [{:kind "Parm" :name "__dest" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/usr/include/string.h" 574 25] :loc-end ["/usr/include/string.h" 574 42]}
+{:kind "Parm" :name "__src" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type" :const "true"}}] :loc-begin ["/usr/include/string.h" 575 4] :loc-end ["/usr/include/string.h" 575 27]}
+{:kind "Parm" :name "__n" :type [{:kind "Int-type"}] :loc-begin ["/usr/include/string.h" 575 34] :loc-end ["/usr/include/string.h" 575 41]}]
+ :body []}
+{:kind "Funcdef" :name "main" :type [{:kind "Func-type" :ParmsType [] :RetType {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 3 1] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 14 1]
  :Parm []
- :body [{:kind "Var" :name "data" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 4 3] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 4 9]}
-{:kind "Structdef" :name "foo_header" :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 5 3] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 5 10]
- :Member []}{:kind "Var" :name "tmp" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 5 3] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 5 22]}
-{:kind "Var" :name "header" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 6 3] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 6 22]}
-{:kind "FuncCall" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 9 3] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 9 38]
- :Func [{:kind "DRE" :name "memcpy" :Extern "true" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "UnsignedLong-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Void-type"}}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "UnsignedLong-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Void-type"}}}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 9 3] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 9 3]}]
- :Parm [{:kind "Unop" :op "&" :type [{:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}} {:kind "Pointer-type" :Pointee {:kind "Void-type"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 9 10] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 9 11] :HS {:kind "DRE" :name "header" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 9 11] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 9 11]}}
-{:kind "DRE" :name "tmp" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 9 19] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 9 19]}{:kind "SizeOf" :type [{:kind "UnsignedLong-type"}] :Argument 
-{:kind "DRE" :name "header" :scope "local" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 9 31] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 9 31]} :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 9 24] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 9 37]}]}
-{:kind "Ret" :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 13 5] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 13 12] :value {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/nakamura/sample/exp36/sample3.c" 13 12] :loc-end ["/home/nakamura/sample/exp36/sample3.c" 13 12]}}]}
-] 
+ :body [{:kind "Var" :name "data" :scope "local" :DisplayType "char *" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 4 3] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 4 9]}
+{:kind "Structdef" :name "foo_header" :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 5 3] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 5 10]
+ :Member []}{:kind "Var" :name "tmp" :scope "local" :DisplayType "struct foo_header *" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 5 3] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 5 22]}
+{:kind "Var" :name "header" :scope "local" :DisplayType "struct foo_header *" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 6 3] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 6 22]}
+{:kind "FuncCall" :type [{:kind "Pointer-type" :Pointee {:kind "Void-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 9 3] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 9 38]
+ :Func [{:kind "DRE" :name "memcpy" :Extern "true" :DisplayType "void *(void *, const void *, unsigned long)" :type [{:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "UnsignedLong-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Void-type"}}} {:kind "Pointer-type" :Pointee {:kind "Func-type" :ParmsType [{:kind "Pointer-type" :Pointee {:kind "Void-type"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}} {:kind "UnsignedLong-type"}] :RetType {:kind "Pointer-type" :Pointee {:kind "Void-type"}}}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 9 3] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 9 3]}]
+ :Parm [{:kind "Unop" :op "&" :type [{:kind "Pointer-type" :Pointee {:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}} {:kind "Pointer-type" :Pointee {:kind "Void-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 9 10] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 9 11] :HS {:kind "DRE" :name "header" :scope "local" :DisplayType "struct foo_header *" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 9 11] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 9 11]}}
+{:kind "DRE" :name "tmp" :scope "local" :DisplayType "struct foo_header *" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}} {:kind "Pointer-type" :Pointee {:kind "Void-type" :const "true"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 9 19] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 9 19]}{:kind "SizeOf" :type [{:kind "UnsignedLong-type"}] :Argument 
+{:kind "DRE" :name "header" :scope "local" :DisplayType "struct foo_header *" :type [{:kind "Pointer-type" :Pointee {:kind "Structure-type" :name "foo_header"}}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 9 31] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 9 31]} :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 9 24] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 9 37]}]}
+{:kind "Ret" :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 13 5] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 13 12] :value {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp36/sample3.c" 13 12] :loc-end ["/home/kasutani/sample/exp36/sample3.c" 13 12]}}]}] 
 

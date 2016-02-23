@@ -1,0 +1,11 @@
+
+[{:kind "Var" :name "c" :scope "global" :DisplayType "char" :type [{:kind "Char-type"}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 1 1] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 1 10]
+ :init {:kind "CharacterLiteral" :value "120" :character "x" :type [{:kind "Int-type"} {:kind "Char-type"}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 1 10] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 1 10]}}
+{:kind "Var" :name "ip" :scope "global" :DisplayType "int *" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 2 1] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 2 19]
+ :init {:kind "Unop" :op "&" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}} {:kind "Pointer-type" :Pointee {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 2 18] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 2 19] :HS {:kind "DRE" :name "c" :scope "global" :DisplayType "char" :type [{:kind "Char-type"}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 2 19] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 2 19]}}}
+{:kind "Var" :name "cp" :scope "global" :DisplayType "char *" :type [{:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 3 1] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 3 20]
+ :init {:kind "DRE" :name "ip" :scope "global" :DisplayType "int *" :type [{:kind "Pointer-type" :Pointee {:kind "Int-type"}} {:kind "Pointer-type" :Pointee {:kind "Char-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 3 20] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 3 20]}}
+{:kind "Funcdef" :name "assert" :type [{:kind "Func-type" :ParmsType [{:kind "Int-type"}] :RetType {:kind "Int-type"}}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 4 1] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 4 16]
+ :Parm [{:kind "Parm" :name "" :type [{:kind "Int-type"}] :loc-begin ["/home/kasutani/sample/exp36/sample4.c" 4 8] :loc-end ["/home/kasutani/sample/exp36/sample4.c" 4 11]}]
+ :body []}] 
+
