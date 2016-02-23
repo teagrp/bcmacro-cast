@@ -1,13 +1,5 @@
-(defrule exp32 @{:kind "Binop" 
-                 :op "=" 
-                 :LHS {:kind "DRE" 
-                       :type [{:kind "Pointer-type" 
-                               :Pointee {:kind "Pointer-type" 
-                                         :Pointee {:volatile "true"}}}]} 
-                       :RHS {:kind "Unop" 
-                             :type [{:kind "Pointer-type" 
-                                     :Pointee {:kind "Pointer-type" :Pointee {}}} 
-                                    {:kind "Pointer-type" 
-                                     :Pointee {:kind "Pointer-type" :Pointee {}}} 
-                                    {:kind "Pointer-type" :Pointee {:kind "Pointer-type"}}]}} 
-"Very bad!!! exp32" )
+(defrule exp32-1 @{:type [{:Pointee {}} ... {:Pointee {:Pointee {:volatile "true"}}}]}
+  "exp32-1")
+
+(defrule exp32-2 @{:type [{:Pointee {:volatile "true"}} ... {:Pointee {}}]}
+  "exp32-2")
