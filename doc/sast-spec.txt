@@ -1,4 +1,4 @@
-Break		break文
+﻿Break		break文
  *:label[]	ラベル (ラベルが付いている時だけ)
 
 Continue	continue文
@@ -158,6 +158,44 @@ Var		変数宣言
 
 Typedef-type	typedef型
   :typename	typedefされた型名
+
+UnsignedChar	unsigned char型
+
+UnsignedShort	unsigned short型
+
+UnsignedInt	unsigned int型
+
+UnsignedLong	unsigned long型
+
+UnsignedLongLong	unsigined longlong型
+
+Char		char型
+
+Short		short型
+
+Int		int型
+
+Long		long型
+
+LongLong	longlong型
+
+Float		float型
+
+SignedChar	signed char型
+
+Double		double型
+
+LongDouble	long double型
+
+Void		void型
+
+Bool		bool型
+
+Wchar_t		C++関係
+
+Dependent	C++関係
+
+UnknownError	未定義
 
 Func-type	関数型
   :ParmType[]	引数の型のリスト
