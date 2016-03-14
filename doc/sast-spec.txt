@@ -1,0 +1,197 @@
+Break		break文
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+Continue	continue文
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+Default		default文
+
+Case		caseラベル
+  :value	caseの値
+
+Label		ラベル
+  :name		ラベル名
+
+Do		do-while文
+  :condition	ループ条件
+  :body[]	ループ本体
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+For		for文
+  :init		ループ変数の初期値
+  :condition	ループ条件 (条件なしのときは空ベクタ)
+  :update[]	更新式
+  :body[]	ループ本体
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+Goto		goto文
+  :goto		行先ラベル
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+If		if文
+  :condition	条件式
+  :then[]	then節
+  :else[]	else節
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+Switch
+  :condition	制御式
+  :body[]	本体
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+While		while文
+  :condition	ループ条件
+  :body[]	ループ本体
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+Ret		return文
+ *:value	戻り値 (戻り値がある時だけ)
+ *:label[]	ラベル (ラベルが付いている時だけ)
+
+
+ArrayRef	配列を使っているところ
+  :type[]	型
+  :Array[]	配列オプジェクト
+  :Index[]	配列インデックス
+
+FuncCall	関数呼び出し
+  :type[]	型
+  :Func[]	関数オブジェクト
+  :parm[]	引数リスト
+
+DRE		変数参照
+  :type[]	型
+  :Displaytype	読める型
+  :name		変数名
+ *:scope	変数参照や構造体のメンバ参照の時だけ
+ *:Static	static 変数なら true
+ *:Extern	extern 宣言された変数なら true
+ *:Auto		auto 宣言された変数なら true
+ *:Register	register 宣言された変数なら true
+
+Struct		構造体のメンバ参照 (.)   ; -> は BinOp になっているが Struct のようにしてもよいかもしれない
+  :type[]	型
+  :struct	構造体オブジェクト
+  :structmember	メンバ名
+
+Sizeof		sizeof演算子の適用
+  :type[]	型
+ *:ArgumentType[]	配列の時だけ ; 怪しい
+ *:Argument		配列以外の時だけ ; 怪しい
+
+Unop		単項演算子
+  :type[]	型
+  :op		演算子
+  :HS		被演算子
+
+Binop		二項演算子
+  :type[]	型
+  :op		演算子
+  :LHS		左辺
+  :RHS		右辺
+
+IntegerLabel 	caseに付いた整数ラベル
+  :type[]	型
+  :value	値
+
+CharacterLabel	caseに付いた文字ラベル
+  :type[]	型
+  :value	整数値
+  :character	文字
+
+IntegerLiteral	整数リテラル
+  :type[]	型
+  :value	値
+	
+FloatingLiteral	浮動小数点値リテラル
+  :type[] 	型
+  :value	値
+
+CharacterLiteral	文字リテラル
+  :type[]	型
+  :value	整数値
+  :character	文字
+
+StringLiteral	文字列リテラル
+  :type[ ]	型
+  :value	値
+
+Structdef	構造体定義
+  :name		構造体名
+  :Member[]	構造体メンバ
+
+Uniondef	共用体定義
+  :name		共用体名
+  :Member[]	共用体メンバ
+
+Field		構造体定義中の構造体メンバ  ; Structure-type の中でも使われる
+  :type[]	型
+  :name		構造体名
+  :scope	スコープ(member)
+
+Method		メソッド定義 (C++)
+  :type[]	型
+  :name		メソッド名
+  :Parm[]	仮引数リスト
+  :body[]	本体
+
+Funcdef		関数定義
+  :type[]	型
+  :name		関数名
+  :Parm[]	仮引数リスト
+  :body[]	本体
+ *:Static	static 変数なら true
+
+Parm		引数
+  :type[]	型
+  :name		変数名
+
+Var		変数宣言
+  :type[]	型
+  :name		変数名
+  :scope	スコープ
+ *:init		初期化があれば
+ *:Static	static 変数なら true
+ *:Extern	extern 宣言された変数なら true
+ *:Auto		auto 宣言された変数なら true
+ *:Register	register 宣言された変数なら true
+
+Typedef-type	typedef型
+  :typename	typedefされた型名
+
+Func-type	関数型
+  :ParmType[]	引数の型のリスト
+  :RetType	戻り値の型
+
+Array-type	配列型
+ *:ArraySize	配列の長さ (constant array typeの時)
+ *:ArraySizeExpression	配列の長さ (variable array typeの時)
+  :type[]	要素の型  ; -> :ArrayType[]
+
+Pointer-type	ポインタ型
+  :Pointee	ポインタの先の型
+ *:const	constポインタなら true
+
+Structure-type	構造体型
+  :name		構造体名
+  :member[]	メンバリスト (Field)
+
+Union-type	共用体型
+  :name		共用体名
+  :member[]	メンバリスト (Field)
+
+Unknown-type	不明な型
+  :typeString
+
+なし C++の何か  ; クラス？
+    :name
+    :Member[]
+
+-------
+全てのノード
+  :loc-begin[]	開始位置
+  :loc-end[]	終了位置
+
+どこに付くか不明
+  :const
+  :volatile
