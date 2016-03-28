@@ -1,0 +1,11 @@
+
+[{:kind "Funcdef" :name "f" :type [{:kind "Func-type" :ParmsType [{:kind "Int-type"} {:kind "Int-type"}] :RetType {:kind "Int-type"}}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 1 1] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 8 1]
+ :Parm [{:kind "Parm" :name "a" :type [{:kind "Int-type"}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 1 7] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 1 11]}
+{:kind "Parm" :name "b" :type [{:kind "Int-type"}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 1 14] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 1 18]}]
+ :body [{:kind "Switch" :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 2 3] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 7 3]
+ :condition {:kind "Binop" :op "=" :type [{:kind "Int-type"}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 2 10] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 2 14]
+ :LHS {:kind "DRE" :name "a" :scope "local" :DisplayType "int" :type [{:kind "Int-type"}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 2 10] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 2 10]}
+ :RHS {:kind "DRE" :name "b" :scope "local" :DisplayType "int" :type [{:kind "Int-type"}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 2 14] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 2 14]}}
+ :body [{:kind "Ret" :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 4 5] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 4 12] :label [{:kind "Case" :line [3 4] :value {:kind "IntegerLabel" :value "0" :type [{:kind "Int-type"}] :line [3 3]}}] :value {:kind "IntegerLiteral" :value 0 :type [{:kind "Int-type"}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 4 12] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 4 12]}}
+{:kind "Ret" :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 6 5] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 6 12] :label [{:kind "Default" :line [5 6]}] :value {:kind "IntegerLiteral" :value 1 :type [{:kind "Int-type"}] :loc-begin ["/home/rules/cert/exp45/bad_switch.c" 6 12] :loc-end ["/home/rules/cert/exp45/bad_switch.c" 6 12]}}]}]}] 
+
