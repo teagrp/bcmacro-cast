@@ -397,7 +397,6 @@ public:
   }
   
   // typeを文字列として出力
-  
   void PrintDisplayType(QualType typeInfo) {
     if (labelflag != 0 || castflag != 0) {
       os << " :DisplayType " << "\"" << typeInfo.getAsString() << "\"";
@@ -950,7 +949,8 @@ public:
     if (pointflag == 1) {
       result = " :Pointee ";
     } else {
-      result = " :type ";
+      //result = " :type "; ->
+      result = "";
     }
     pointflag = 0;
     return result;
