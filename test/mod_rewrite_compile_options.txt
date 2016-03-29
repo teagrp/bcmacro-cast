@@ -1,0 +1,20 @@
+-c
+-I../../srclib/pcre
+-I.
+-I../../os/unix
+-I../../server/mpm/prefork
+-I../../modules/http
+-I../../modules/filters
+-I../../modules/proxy
+-I../../include
+-I../../modules/generators
+-I../../modules/mappers
+-I../../modules/database
+-I../../srclib/apr/include
+-I../../srclib/apr-util/include
+-I../../srclib/apr-util/xml/expat/lib
+-I../../modules/proxy/../generators
+-I../../modules/ssl
+-I../../modules/dav/main 
+-I/usr/lib/gcc/x86_64-linux-gnu/4.9/include
+-U__GNUC__ -DLINUX -D_REENTRANT -D_GNU_SOURCE
