@@ -1778,7 +1778,7 @@ public:
   std::string EscapeChar(char c) {
     std::string dest;
     switch (c) {
-    case '\'':
+    case '\"':
     case '\\':
       dest.push_back('\\');
       break;
