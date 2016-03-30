@@ -1186,7 +1186,18 @@ public:
     caselabel += os.str();
     os.str("");
     os.clear();
-    return true;
+
+    /* FIXME: print case conditions other than literals
+     */
+    assert(Case->getLHS() != NULL);
+    switch (Case->getLHS()->getStmtClass()) {
+    case Stmt::IntegerLiteralClass:
+    case Stmt::CharacterLiteralClass:
+      return true;
+    default:
+      caselabel += "\"unsupported\"";
+      return false;
+    }
   }
   
   // CompoundStmt
