@@ -5,7 +5,7 @@
 ;; defrule
 
 (defn trans [pat sf sl sc]
-  (if (= 'clojure.core/deref (first (seq pat)))
+  (if (and (seq? pat) (= 'clojure.core/deref (first (seq pat))))
     `(clojure.core/deref ~(assoc (second pat) :loc-begin [sf sl sc]))
     (cond (vector? pat)
           (mapv #(trans % sf sl sc) pat)
