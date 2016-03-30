@@ -63,8 +63,6 @@ public:
 	caseflag = 0;
 	casetoji = 0;
 	castflag = 0;
-	pointflag = 0;
-	firsttype = 0;
 	labelflag = 0;
 	caselabel = "";
 	RecursiveASTVisitor::TraverseDecl(decl);
@@ -154,7 +152,6 @@ public:
 	 << " :name " << "\"" << (std::string)field->getName() << "\""
 	 << " :scope " << "\"member\"";
       os << " :type [";
-      firsttype = 0;
       PrintTypeInfo(fieldtype);
       checkCast();
       os << "]";
@@ -168,7 +165,6 @@ public:
 		   << " :name " << "\"" << field->getName() << "\""
 		   << " :scope " << "\"member\"";
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(fieldtype);
       checkCast();
       llvm::outs() << "]";
@@ -188,7 +184,6 @@ public:
 		   << " :name " << "\"" << last_func << "\"";
       checkSpecifier(method->getStorageClass());
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(functype);
       checkCast();
       llvm::outs() << "]";
@@ -240,7 +235,6 @@ public:
     llvm::outs() << "{:kind \"Parm\"" 
 		 << " :name " << "\"" << varname  << "\"";
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(vartype);
     checkCast();
     llvm::outs() << "]";
@@ -311,7 +305,6 @@ public:
     checkSpecifier(Decl->getStorageClass());
     PrintDisplayType(vartype);
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(vartype);
     checkCast();
     llvm::outs() << "]";
@@ -426,8 +419,7 @@ public:
     TypedefNameDecl *TDtype = dyn_cast<TypedefType>(typeInfo)->getDecl();
     assert(labelflag == 0);
     if (castflag != 0) {
-      cast << checkPointkey() 
-	   << "{:kind \"Typedef-type\"" 
+      cast << "{:kind \"Typedef-type\""
 	   << " :typename " << "\"" << (std::string)TDtype->getName() << "\""
 	   << " :typedeftype ";
       PrintTypeInfo(TDtype->getUnderlyingType());
@@ -437,8 +429,7 @@ public:
       cast.str("");
       cast.clear();
     } else {
-      llvm::outs() << checkPointkey() 
-		   << "{:kind \"Typedef-type\"" 
+      llvm::outs() << "{:kind \"Typedef-type\""
 		   << " :typename " << "\"" << TDtype->getName() << "\""
 		   << " :typedeftype ";
       PrintTypeInfo(TDtype->getUnderlyingType());
@@ -514,16 +505,14 @@ public:
     }
     assert(labelflag == 0);
     if (castflag != 0) {
-      cast << checkPointkey()
-	   << "{:kind \"" << Typename << "-type\"";
+      cast << "{:kind \"" << Typename << "-type\"";
       PrintQualifier(typeInfo);
       cast << "}";
       castlabel += cast.str();
       cast.str("");
       cast.clear();
     } else {
-      llvm::outs() << checkPointkey()
-		   << "{:kind \"" << Typename << "-type\"";
+      llvm::outs() << "{:kind \"" << Typename << "-type\"";
       PrintQualifier(typeInfo);
       llvm::outs() << "}";
     }
@@ -532,15 +521,13 @@ public:
   void PrintFunctionTypeInfo(QualType typeInfo) {
     assert(labelflag == 0);
     if (castflag != 0) {
-      cast <<  checkPointkey()
-	   << "{:kind \"Func-type\""
+      cast << "{:kind \"Func-type\""
 	   << " :ParmsType [";
       if (dyn_cast<FunctionProtoType>(typeInfo)) {
 	unsigned parms = dyn_cast<FunctionProtoType>(typeInfo)->getNumArgs();
 	if (parms != 0) {
 	  unsigned i = 0;
 	  while (i < parms) {
-	    firsttype = 0;
 	    if (i != 0) {
 	      cast << " ";
 	    }
@@ -553,7 +540,6 @@ public:
       if (dyn_cast<FunctionType>(typeInfo)) {
 	cast << " :RetType ";
 	QualType rettype = dyn_cast<FunctionType>(typeInfo)->getResultType();
-	firsttype = 0;
 	PrintTypeInfo(rettype);
       } 
       cast << "}";
@@ -561,15 +547,13 @@ public:
       cast.str("");
       cast.clear();
     } else {
-      llvm::outs() <<  checkPointkey()
-		   << "{:kind \"Func-type\""
+      llvm::outs() << "{:kind \"Func-type\""
 		   << " :ParmsType [";
       if (dyn_cast<FunctionProtoType>(typeInfo)) {
 	unsigned parms = dyn_cast<FunctionProtoType>(typeInfo)->getNumArgs();
 	if (parms != 0) {
 	  unsigned i = 0;
 	  while (i < parms) {
-	    firsttype = 0;
 	    if (i != 0) {
 	      llvm::outs() << " ";
 	    }
@@ -582,7 +566,6 @@ public:
       if (dyn_cast<FunctionType>(typeInfo)) {
 	llvm::outs() << " :RetType ";
 	QualType rettype = dyn_cast<FunctionType>(typeInfo)->getResultType();
-	firsttype = 0;
 	PrintTypeInfo(rettype);
       } 
       llvm::outs() << "}";
@@ -595,8 +578,7 @@ public:
       elmtype = dyn_cast<ArrayType>(typeInfo)->getElementType();
       assert(labelflag == 0);
       if (castflag != 0) {
-	cast << checkPointkey()
-	     << "{:kind \"Array-type\"";		   
+	cast << "{:kind \"Array-type\"";
 	if (dyn_cast<ConstantArrayType>(typeInfo)) {
 	  cast << " :Arraysize \"" 
 	       << dyn_cast<ConstantArrayType>(typeInfo)->getSize().toString(10, true) << "\"";
@@ -615,8 +597,7 @@ public:
 	cast.str("");
 	cast.clear();
       } else {
-	llvm::outs() << checkPointkey()
-		     << "{:kind \"Array-type\"";		   
+	llvm::outs()  << "{:kind \"Array-type\"";
 	if (dyn_cast<ConstantArrayType>(typeInfo)) {
 	  llvm::outs() << " :ArraySize \"" 
 		       << dyn_cast<ConstantArrayType>(typeInfo)->getSize() << "\"";
@@ -643,8 +624,7 @@ public:
       QualType elmtype = dyn_cast<PointerType>(typeInfo)->getPointeeType();
       assert(labelflag == 0);
       if (castflag != 0) {
-	cast << checkPointkey()
-	     << "{:kind \"Pointer-type\""
+	cast << "{:kind \"Pointer-type\""
 	     << " :Pointee ";
 	PrintTypeInfo(elmtype);
 	PrintQualifier(typeInfo);
@@ -653,8 +633,7 @@ public:
 	cast.str("");
 	cast.clear();
       } else {
-	llvm::outs() << checkPointkey()
-		     << "{:kind \"Pointer-type\""
+	llvm::outs() << "{:kind \"Pointer-type\""
 		     << " :Pointee ";
 	PrintTypeInfo(elmtype);
 	PrintQualifier(typeInfo);
@@ -672,8 +651,7 @@ public:
       } 
       if (dyn_cast<RecordType>(typeInfo)) {
 	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	cast << checkPointkey()
-	     << "{:kind \"Structure-type\"";
+	cast << "{:kind \"Structure-type\"";
 	PrintQualifier(typeInfo);
 	cast << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
 	if (rdecl->getName() == "") {
@@ -696,14 +674,10 @@ public:
     } else {
       if (dyn_cast<ElaboratedType>(typeInfo)) {
 	QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	if (firsttype == 1) { 
-	  firsttype = 0;
-	}
 	PrintTypeInfo(etype);
       } 
       if (dyn_cast<RecordType>(typeInfo)) {
-	llvm::outs() << checkPointkey()
-		     << "{:kind \"Structure-type\"";
+	llvm::outs() << "{:kind \"Structure-type\"";
 	PrintQualifier(typeInfo);
 	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
 	llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";  
@@ -732,8 +706,7 @@ public:
       } 
       if (dyn_cast<RecordType>(typeInfo)) {
 	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	cast << checkPointkey()
-	     << "{:kind \"Union-type\"";
+	cast << "{:kind \"Union-type\"";
 	PrintQualifier(typeInfo);
 	cast << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
 	if (rdecl->getName() == "") {
@@ -760,8 +733,7 @@ public:
       } 
       if (dyn_cast<RecordType>(typeInfo)) {
 	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	llvm::outs() << checkPointkey()
-		     << "{:kind \"Union-type\"";
+	llvm::outs() << "{:kind \"Union-type\"";
 	PrintQualifier(typeInfo);
 	llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";
 	if (rdecl->getName() == "") {
@@ -784,7 +756,6 @@ public:
   // :typeの情報を出力
   void PrintTypeInfo(QualType typeInfo) {
     //llvm::outs() << "(";
-    firsttype++;
     if (dyn_cast<AutoType>(typeInfo))
       PrintAutoTypeInfo(typeInfo);
     else if (dyn_cast<TypedefType>(typeInfo))
@@ -804,41 +775,20 @@ public:
     else {
       assert(labelflag == 0);
       if (castflag != 0) {
-	cast << checkPointkey()
-	   << "{:kind \"Unknown-type\""
-	   << " :typeString " << "\"" << typeInfo.getAsString() << "\"}";
+	cast << "{:kind \"Unknown-type\""
+	     << " :typeString " << "\"" << typeInfo.getAsString() << "\"}";
 	castlabel += cast.str();
 	cast.str("");
 	cast.clear();
       } else {
-	llvm::outs() << checkPointkey()
-		     << "{:kind \"Unknown-type\""
+	llvm::outs() << "{:kind \"Unknown-type\""
 		     << " :typeString " << "\"" << typeInfo.getAsString() << "\"}";
       }
     }
-    firsttype = 0;
     //llvm::outs() << "\"" << typeInfo.getAsString() << "\")";
     //llvm::outs()  << " " << typeInfo->getTypeClassName();
   }
   
-  std::string checkPointkey() {
-    return "";
-    /*
-    std::string result;
-    if (firsttype == 1) {
-      return "";
-    }
-    if (pointflag == 1) {
-      result = " :Pointee ";
-    } else {
-      //result = " :type "; ->
-      result = "";
-    }
-    pointflag = 0;
-    return result;
-    */
-  }
-
   void PrintQualifier(QualType Qual) {
     if (labelflag != 0) {
       if (Qual.isConstQualified()) {
@@ -1406,7 +1356,6 @@ public:
   bool VisitArraySubscriptExpr(ArraySubscriptExpr *arrsub) {
     llvm::outs() << "{:kind \"ArrayRef\"";
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(arrsub->getType());
     checkCast();
     llvm::outs() << "]";
@@ -1426,7 +1375,6 @@ public:
     llvm::outs() << "{:kind \"FuncCall\"";
     checkLabel();
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(call->getType());
     checkCast();
     llvm::outs() << "]";
@@ -1481,7 +1429,6 @@ public:
 	checkSpecifier(vardecl->getStorageClass());
 	PrintDisplayType(vartype);
 	os << " :type [";
-	firsttype = 0;
 	PrintTypeInfo(vartype);
 	checkCast();
 	os << "]";
@@ -1502,7 +1449,6 @@ public:
 	checkSpecifier(funcdecl->getStorageClass());
 	PrintDisplayType(functype);
 	os << " :type [";
-	firsttype = 0;
 	PrintTypeInfo(functype);
 	checkCast();
 	os << "]";
@@ -1521,7 +1467,6 @@ public:
 	   << " :name " << "\"" << Declref->getNameInfo().getAsString() << "\"";
 	PrintDisplayType(Declreftype);
 	os << " :type [";
-	firsttype = 0;
 	PrintTypeInfo(Declreftype);
 	checkCast();
 	os << "]";
@@ -1546,7 +1491,6 @@ public:
 	checkSpecifier(vardecl->getStorageClass());
 	PrintDisplayType(vartype);
 	llvm::outs() << " :type [";
-	firsttype = 0;
 	PrintTypeInfo(vartype);
 	checkCast();
 	llvm::outs() << "]";
@@ -1561,7 +1505,6 @@ public:
 	checkSpecifier(funcdecl->getStorageClass());
 	PrintDisplayType(functype);
 	llvm::outs() << " :type [";
-	firsttype = 0;
 	PrintTypeInfo(functype);
 	checkCast();
 	llvm::outs() << "]";
@@ -1574,7 +1517,6 @@ public:
 		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
 	PrintDisplayType(Declreftype);
 	llvm::outs() << " :type [";
-	firsttype = 0;
 	PrintTypeInfo(Declreftype);
 	checkCast();
 	llvm::outs() << "]";
@@ -1617,7 +1559,6 @@ public:
       linefeedflag = 0;
       TraverseDecl(vdecl);
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(memtype);
       checkCast();
       llvm::outs() << "]";
@@ -1631,7 +1572,6 @@ public:
     if(mem->isArrow()) {
       llvm::outs() << "{:kind \"Binop\" :op \"->\"";
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(mem->getType());
       checkCast();
       llvm::outs() << "]";
@@ -1664,7 +1604,6 @@ public:
 		 << " :name " << "\"" << vdecl->getName() << "\"" 
 		 << " :scope \"member\"";
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(vartype);
     checkCast();
     llvm::outs() << "]";
@@ -1679,12 +1618,10 @@ public:
     case UETT_SizeOf:
       llvm::outs() << "{:kind \"SizeOf\"";
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(expr->getType());
       checkCast();
       llvm::outs() << "]";
       if (expr->isArgumentType()) {
-	firsttype = 0;
 	llvm::outs() << " :ArgumentType [";
 	PrintTypeInfo(expr->getArgumentType());
 	llvm::outs() << "]";
@@ -1707,7 +1644,6 @@ public:
     llvm::outs() << "{:kind \"Unop\""
 		 << " :op " << "\"" << Unop->getOpcodeStr(opcode) << "\"";
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(Unop->getType());
     checkCast();
     llvm::outs() << "]";
@@ -1725,7 +1661,6 @@ public:
     llvm::outs() << "{:kind \"Binop\"" 
 		 << " :op " << "\"" << Binop->getOpcodeStr() << "\"";
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(Binop->getType());
     checkCast();
     llvm::outs() << "]";
@@ -1751,7 +1686,6 @@ public:
     llvm::outs() << "{:kind \"Conditionalop\""; 
       //<< " :op " << "\"" << condop->getOpcodeStr() << "\"";
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(condop->getType());
     checkCast();
     llvm::outs() << "]";
@@ -1794,7 +1728,6 @@ public:
 	 << " :character " << "\"" << char(charL->getValue()) << "\"";
     }
     os << " :type [";
-    firsttype = 0;
     PrintTypeInfo(literaltype);
     checkCast();
     os << "]";
@@ -1817,7 +1750,6 @@ public:
       llvm::outs() << "{:kind \"IntegerLiteral\""
 		   << " :value " << Int->getValue();
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(vartype);
       checkCast();
       llvm::outs() << "]";
@@ -1833,7 +1765,6 @@ public:
     llvm::outs() << "{:kind \"FloatingLiteral\""
 		 << " :value " << Float->getValueAsApproximateDouble();
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(vartype);
     checkCast();
     llvm::outs() << "]";
@@ -1852,7 +1783,6 @@ public:
 		   << " :value " << "\"" << Char->getValue() << "\""
 		   << " :character " << "\"" << char(Char->getValue()) << "\"";
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(vartype);
       checkCast();
       llvm::outs() << "]";
@@ -1868,7 +1798,6 @@ public:
     llvm::outs() << "{:kind \"StringLiteral\""
 		 << " :value " << "\"" << String->getString().str() << "\"";
     llvm::outs() << " :type [";
-    firsttype = 0;
     PrintTypeInfo(vartype);
     checkCast();
     llvm::outs() << "]";
@@ -1951,12 +1880,10 @@ private:
   int casetoji;
   int caseflag; // ラベルが付いている証
   int castflag; // ImplicitCastExpr が出現したか
-  int firsttype; // typeでrecordtypeが最初に出て来たか判断
   int FuncCall;
   int labelflag; // ラベル(case, default, label)が出現した印
   int linefeedbody;
   int linefeedflag;
-  int pointflag;
 };
 
 
