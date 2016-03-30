@@ -65,6 +65,7 @@ public:
 	castflag = 0;
 	labelflag = 0;
 	caselabel = "";
+	skipcount = 0;
 	RecursiveASTVisitor::TraverseDecl(decl);
 	break;
       case Decl::Typedef:
@@ -825,6 +826,10 @@ public:
   // Stmt : Binop, ReturnStmt, forstmt, ifstmt, ... etc
   // *Stmt, *Expr をカバーしていると思う
   bool TraverseStmt(Stmt *stmt) {
+    if (skipcount > 0) {
+      skipcount--;
+      return true;
+    }
     if (stmt != NULL){
       //llvm::outs() << "\nenter " << stmt->getStmtClassName() << "\n";
       switch (stmt->getStmtClass()) {
@@ -1172,8 +1177,8 @@ public:
   // BreakStmt
   bool VisitBreakStmt(BreakStmt *Break) {
     llvm::outs()  << "{:kind \"Break\"";
-    PrintSourceRange(Break->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(Break->getSourceRange());
     llvm::outs() << "}";
     return true;
   }
@@ -1196,7 +1201,9 @@ public:
       return true;
     default:
       caselabel += "\"unsupported\"}";
-      return false;
+      labelflag = 0;
+      skipcount = 1;
+      return true;
     }
   }
   
@@ -1211,8 +1218,8 @@ public:
   // ContinueStmt
   bool VisitContinueStmt(ContinueStmt *Continue) {
     llvm::outs() << "{:kind \"Continue\"";
-    PrintSourceRange(Continue->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(Continue->getSourceRange());
     llvm::outs() << "}";
     return true;
   } 
@@ -1232,8 +1239,8 @@ public:
   // DoStmt
   bool VisitDoStmt(DoStmt *Do) {
     llvm::outs() << "{:kind \"Do\"";
-    PrintSourceRange(Do->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(Do->getSourceRange());
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(Do->getCond());
@@ -1248,8 +1255,8 @@ public:
   // ForStmt
   bool VisitForStmt(ForStmt *For) {
     llvm::outs() << "{:kind \"For\"";
-    PrintSourceRange(For->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(For->getSourceRange());
     llvm::outs() << "\n :init [";
     linefeedflag = 0;
     TraverseStmt(For->getInit());
@@ -1275,8 +1282,8 @@ public:
   bool VisitGotoStmt(GotoStmt *Goto) {
     NamedDecl *label = dyn_cast<NamedDecl>(Goto->getLabel());
     llvm::outs() << "{:kind \"Goto\"";
-    PrintSourceRange(Goto->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(Goto->getSourceRange());
     llvm::outs() << " :goto " << "\"" << label->getName() << "\"}";
     return true;
   }
@@ -1284,8 +1291,8 @@ public:
   // IfStmt
   bool VisitIfStmt(IfStmt *If) {
     llvm::outs() << "{:kind \"If\"";
-    PrintSourceRange(If->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(If->getSourceRange());
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(If->getCond());
@@ -1319,8 +1326,8 @@ public:
   // SwitchStmt
   bool VisitSwitchStmt(SwitchStmt *Switch) {
     llvm::outs() << "{:kind \"Switch\"";
-    PrintSourceRange(Switch->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(Switch->getSourceRange());
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(Switch->getCond());
@@ -1335,8 +1342,8 @@ public:
   // WhileStmt
   bool VisitWhileStmt(WhileStmt *While) {
     llvm::outs() << "{:kind \"While\"";
-    PrintSourceRange(While->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(While->getSourceRange());
     llvm::outs() << "\n :condition ";
     linefeedflag = 0;
     TraverseStmt(While->getCond());
@@ -1351,8 +1358,8 @@ public:
   // ReturnStmt
   bool VisitReturnStmt(ReturnStmt *Ret) {
     llvm::outs() << "{:kind \"Ret\"";
-    PrintSourceRange(Ret->getSourceRange());
     checkLabel(); 
+    PrintSourceRange(Ret->getSourceRange());
     if (Ret->getRetValue()) {
       llvm::outs() << " :value ";
       linefeedflag = 0;
@@ -1368,12 +1375,12 @@ public:
   // ArraySubscriptExpr
   bool VisitArraySubscriptExpr(ArraySubscriptExpr *arrsub) {
     llvm::outs() << "{:kind \"ArrayRef\"";
+    checkLabel(); 
     llvm::outs() << " :type [";
     PrintTypeInfo(arrsub->getType());
     checkCast();
     llvm::outs() << "]";
     PrintSourceRange(arrsub->getSourceRange());
-    checkLabel(); 
     llvm::outs() << "\n :Array [";
     TraverseStmt(arrsub->getLHS());
     llvm::outs() << "]\n :Index ";
@@ -1448,8 +1455,9 @@ public:
 	PrintSourceRange(Declref->getSourceRange());
 	os << "}";
 	if (casetoji != 0) {
-	os << "}";
-	casetoji = 0;
+	  os << "}";
+	  casetoji = 0;
+	  labelflag = 0;
 	}
 	caselabel += os.str();
 	os.str("");
@@ -1468,8 +1476,9 @@ public:
 	PrintSourceRange(Declref->getSourceRange());
 	os << "}";
 	if (casetoji != 0) {
-	os << "}";
-	casetoji = 0;
+	  os << "}";
+	  casetoji = 0;
+	  labelflag = 0;
 	}
 	caselabel += os.str();
 	os.str("");
@@ -1489,6 +1498,7 @@ public:
       if (casetoji != 0) {
 	os << "}";
 	casetoji = 0;
+	labelflag = 0;
       }
       caselabel += os.str();
       os.str("");
@@ -1501,6 +1511,7 @@ public:
 	llvm::outs() << "{:kind \"DRE\"" 
 		     << " :name " << "\"" << Declref->getNameInfo() << "\""
 		     << " :scope " << "\"" << scope << "\"";
+	checkLabel(); 
 	checkSpecifier(vardecl->getStorageClass());
 	PrintDisplayType(vartype);
 	llvm::outs() << " :type [";
@@ -1508,13 +1519,13 @@ public:
 	checkCast();
 	llvm::outs() << "]";
 	PrintSourceRange(Declref->getSourceRange());
-	checkLabel(); 
 	llvm::outs() << "}";
       } else if (funcdecl) {// 関数の場合
 	QualType functype = funcdecl->getType();
 	std::string Declreftype = funcdecl->getResultType().getAsString();
 	llvm::outs() << "{:kind \"DRE\"" 
 		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
+	checkLabel(); 
 	checkSpecifier(funcdecl->getStorageClass());
 	PrintDisplayType(functype);
 	llvm::outs() << " :type [";
@@ -1522,19 +1533,18 @@ public:
 	checkCast();
 	llvm::outs() << "]";
 	PrintSourceRange(Declref->getSourceRange());
-	checkLabel(); 
 	llvm::outs() << "}";
       } else {
 	QualType Declreftype = Declref->getType();
 	llvm::outs() << "{:kind \"DRE\"" 
 		     << " :name " << "\"" << Declref->getNameInfo() << "\"";
+	checkLabel(); 
 	PrintDisplayType(Declreftype);
 	llvm::outs() << " :type [";
 	PrintTypeInfo(Declreftype);
 	checkCast();
 	llvm::outs() << "]";
 	PrintSourceRange(Declref->getSourceRange());
-	checkLabel(); 
 	llvm::outs() << "}";
       }
     }
@@ -1584,12 +1594,12 @@ public:
     }
     if(mem->isArrow()) {
       llvm::outs() << "{:kind \"Binop\" :op \"->\"";
+      checkLabel(); 
       llvm::outs() << " :type [";
       PrintTypeInfo(mem->getType());
       checkCast();
       llvm::outs() << "]";
       PrintSourceRange(mem->getSourceRange());
-      checkLabel(); 
       llvm::outs() << "\n :LHS ";
       getlhsArrow(base);
       llvm::outs() << "\n :RHS ";
@@ -1656,12 +1666,12 @@ public:
     UnaryOperator::Opcode opcode = Unop->getOpcode();
     llvm::outs() << "{:kind \"Unop\""
 		 << " :op " << "\"" << Unop->getOpcodeStr(opcode) << "\"";
+    checkLabel(); 
     llvm::outs() << " :type [";
     PrintTypeInfo(Unop->getType());
     checkCast();
     llvm::outs() << "]";
     PrintSourceRange(Unop->getSourceRange());
-    checkLabel(); 
     llvm::outs() << " :HS ";
     linefeedflag = 0;
     TraverseStmt(Unop->getSubExpr());
@@ -1673,12 +1683,12 @@ public:
   bool VisitBinaryOperator(BinaryOperator *Binop) {
     llvm::outs() << "{:kind \"Binop\"" 
 		 << " :op " << "\"" << Binop->getOpcodeStr() << "\"";
+    checkLabel(); 
     llvm::outs() << " :type [";
     PrintTypeInfo(Binop->getType());
     checkCast();
     llvm::outs() << "]";
     PrintSourceRange(Binop->getSourceRange());
-    checkLabel(); 
     llvm::outs() << "\n :LHS ";
     linefeedflag = 0;
     TraverseStmt(Binop->getLHS());
@@ -1698,12 +1708,12 @@ public:
   bool VisitConditionalOperator(ConditionalOperator *condop) {
     llvm::outs() << "{:kind \"Conditionalop\""; 
       //<< " :op " << "\"" << condop->getOpcodeStr() << "\"";
+    checkLabel(); 
     llvm::outs() << " :type [";
     PrintTypeInfo(condop->getType());
     checkCast();
     llvm::outs() << "]";
     PrintSourceRange(condop->getSourceRange());
-    checkLabel(); 
     llvm::outs() << "\n :operand1 ";
     linefeedflag = 0;
     TraverseStmt(condop->getCond());
@@ -1727,7 +1737,8 @@ public:
   void getLabelValue(Expr *literal){
     std::string literalname;
     std::string literalvalue;
-    QualType literaltype = literal->getType();
+    //    QualType literaltype = literal->getType();
+    assert(labelflag != 0);
     if (dyn_cast<IntegerLiteral>(literal)) {
       literalname = "IntegerLabel";
       IntegerLiteral* intL = dyn_cast<IntegerLiteral>(literal);
@@ -1740,10 +1751,17 @@ public:
 	 << " :value " << "\"" << charL->getValue() << "\""
 	 << " :character " << "\"" << char(charL->getValue()) << "\"";
     }
-    os << " :type [";
-    PrintTypeInfo(literaltype);
-    checkCast();
-    os << "]";
+    /* FIXME: print :type
+       os << " :type [";
+       PrintTypeInfo(literaltype);
+       checkCast();
+       os << "]";
+    */
+    if (dyn_cast<IntegerLiteral>(literal))
+      os << " :type [{:kind \"Int-type\"}]";
+    else if (dyn_cast<CharacterLiteral>(literal))
+      os << " :type [{:kind \"Char-type\"}]";
+
     PrintSourceRange(literal->getSourceRange());
     os << "}}";
     casetoji = 0;
@@ -1930,6 +1948,7 @@ private:
   int labelflag; // ラベル(case, default, label)が出現した印
   int linefeedbody;
   int linefeedflag;
+  int skipcount; // skip processing a node while this count is positive
 };
 
 
