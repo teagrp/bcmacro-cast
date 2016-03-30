@@ -1195,7 +1195,7 @@ public:
     case Stmt::CharacterLiteralClass:
       return true;
     default:
-      caselabel += "\"unsupported\"";
+      caselabel += "\"unsupported\"}";
       return false;
     }
   }
