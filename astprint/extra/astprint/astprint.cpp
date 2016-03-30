@@ -441,6 +441,7 @@ public:
 	   << "{:kind \"Typedef-type\"" 
 	   << " :typename " << "\"" << (std::string)TDtype->getName() << "\"";
 	PrintQualifier(typeInfo);
+	os << " :typedeftype ";
 	PrintTypeInfo(TDtype->getUnderlyingType());
 	os << "}";
 	caselabel += os.str();
@@ -451,6 +452,7 @@ public:
 	   << "{:kind \"Typedef-type\"" 
 	   << " :typename " << "\"" << (std::string)TDtype->getName() << "\"";
 	PrintQualifier(typeInfo);
+	cast << " :typedeftype ";
 	PrintTypeInfo(TDtype->getUnderlyingType());
 	cast << "}";
 	castlabel += cast.str();
@@ -461,6 +463,7 @@ public:
 		     << "{:kind \"Typedef-type\"" 
 		     << " :typename " << "\"" << TDtype->getName() << "\"";
 	PrintQualifier(typeInfo);
+	llvm::outs() << " :typedeftype ";
 	PrintTypeInfo(TDtype->getUnderlyingType());
 	llvm::outs() << "}";
       }
