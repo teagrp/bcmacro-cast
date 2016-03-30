@@ -1775,6 +1775,20 @@ public:
     return true;
   }
 
+  std::string EscapeChar(char c) {
+    std::string dest;
+    switch (c) {
+    case '\'':
+    case '\\':
+      dest.push_back('\\');
+      break;
+    default:
+      break;
+    }
+    dest.push_back(c);
+    return dest;
+  }
+
   // CharacterLiteral
   bool VisitCharacterLiteral(CharacterLiteral *Char) {
     QualType vartype = Char->getType();
@@ -1783,7 +1797,8 @@ public:
     } else {
       llvm::outs() << "{:kind \"CharacterLiteral\""
 		   << " :value " << "\"" << Char->getValue() << "\""
-		   << " :character " << "\"" << char(Char->getValue()) << "\"";
+		   << " :character " << "\""
+		   << EscapeChar(char(Char->getValue())) << "\"";
       llvm::outs() << " :type [";
       PrintTypeInfo(vartype);
       checkCast();
@@ -1794,11 +1809,29 @@ public:
     return true;
   }
 
+  std::string EscapeString(std::string src) {
+    std::string dest;
+    for (size_t i = 0; i < src.length();i++) {
+      char c = src[i];
+      switch (c) {
+      case '\"':
+      case '\\':
+	dest.push_back('\\');
+	break;
+      default:
+	break;
+      }
+      dest.push_back(c);
+    }
+    return dest;
+  }
+
   // StringLiteral
   bool VisitStringLiteral(StringLiteral *String) {
     QualType vartype = String->getType();
     llvm::outs() << "{:kind \"StringLiteral\""
-		 << " :value " << "\"" << String->getString().str() << "\"";
+		 << " :value " << "\""
+		 << EscapeString(String->getString().str()) << "\"";
     llvm::outs() << " :type [";
     PrintTypeInfo(vartype);
     checkCast();
