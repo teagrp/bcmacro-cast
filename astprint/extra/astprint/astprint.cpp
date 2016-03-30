@@ -1874,13 +1874,13 @@ public:
     llvm::outs() << "]";
     PrintSourceRange(condop->getSourceRange());
     checkLabel(); 
-    llvm::outs() << "\n :condition ";
+    llvm::outs() << "\n :operand1 ";
     linefeedflag = 0;
     TraverseStmt(condop->getCond());
-    llvm::outs() << "\n :LHS ";
+    llvm::outs() << "\n :operand2 ";
     linefeedflag = 0;
     TraverseStmt(condop->getTrueExpr());
-    llvm::outs() << "\n :RHS ";
+    llvm::outs() << "\n :operand3 ";
     if (condop->getRHS()->getStmtClass() == 68) {
       llvm::outs() << "{:kind \"NULL\" :value \"Null\"}";
     } else {
