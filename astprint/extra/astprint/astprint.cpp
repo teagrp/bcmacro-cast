@@ -1169,6 +1169,15 @@ public:
 	}
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
+      case Stmt::ConditionalOperatorClass:
+	if (linefeedflag == 0 || linefeedbody == 0) {
+	  linefeedflag = 1;
+	  linefeedbody = 1;
+	} else {
+	  llvm::outs() << "\n";
+	}
+	RecursiveASTVisitor::TraverseStmt(stmt);
+	break;
       case Stmt::CompoundAssignOperatorClass:
 	RecursiveASTVisitor::TraverseStmt(stmt);
 	break;
@@ -1249,7 +1258,6 @@ public:
       case Stmt::UnaryTypeTraitExprClass:
       case Stmt::UnresolvedLookupExprClass:
       case Stmt::UnresolvedMemberExprClass:
-      case Stmt::ConditionalOperatorClass:
       case Stmt::ExprWithCleanupsClass:
 	//llvm::outs() << "?Stmt? " << stmt->getStmtClassName();	
 	RecursiveASTVisitor::TraverseStmt(stmt);
@@ -1855,6 +1863,36 @@ public:
     return false;
   }
   
+  // ConditionalOperator
+  bool VisitConditionalOperator(ConditionalOperator *condop) {
+    llvm::outs() << "{:kind \"Conditionalop\""; 
+      //<< " :op " << "\"" << condop->getOpcodeStr() << "\"";
+    llvm::outs() << " :type [";
+    firsttype = 0;
+    PrintTypeInfo(condop->getType());
+    checkCast();
+    llvm::outs() << "]";
+    PrintSourceRange(condop->getSourceRange());
+    checkLabel(); 
+    llvm::outs() << "\n :condition ";
+    linefeedflag = 0;
+    TraverseStmt(condop->getCond());
+    llvm::outs() << "\n :LHS ";
+    linefeedflag = 0;
+    TraverseStmt(condop->getTrueExpr());
+    llvm::outs() << "\n :RHS ";
+    if (condop->getRHS()->getStmtClass() == 68) {
+      llvm::outs() << "{:kind \"NULL\" :value \"Null\"}";
+    } else {
+      linefeedflag = 0;
+      TraverseStmt(condop->getFalseExpr());
+    }
+    llvm::outs() << "}";
+      
+    return false;
+    
+  }
+    
   // LabelValue
   void getLabelValue(Expr *literal){
     std::string literalname;
