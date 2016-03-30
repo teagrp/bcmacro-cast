@@ -207,7 +207,6 @@ public:
 		   << " :name " << "\"" << last_func << "\"";
       checkSpecifier(Decl->getStorageClass());
       llvm::outs() << " :type [";
-      firsttype = 0;
       PrintTypeInfo(functype);
       checkCast();
       llvm::outs() << "]";
