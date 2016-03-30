@@ -640,24 +640,24 @@ public:
 
   void PrintPointerTypeInfo(QualType typeInfo) {
     if (dyn_cast<PointerType>(typeInfo)) {
-      std::string key = checkPointkey();
-      pointflag = 1;
       QualType elmtype = dyn_cast<PointerType>(typeInfo)->getPointeeType();
       assert(labelflag == 0);
       if (castflag != 0) {
-	cast << key
-	     << "{:kind \"Pointer-type\"";
-	PrintQualifier(typeInfo);
+	cast << checkPointkey()
+	     << "{:kind \"Pointer-type\""
+	     << " :Pointee ";
 	PrintTypeInfo(elmtype);
+	PrintQualifier(typeInfo);
 	cast << "}";
 	castlabel += cast.str();
 	cast.str("");
 	cast.clear();
       } else {
-	llvm::outs() << key
-		     << "{:kind \"Pointer-type\"";
-	PrintQualifier(typeInfo);
+	llvm::outs() << checkPointkey()
+		     << "{:kind \"Pointer-type\""
+		     << " :Pointee ";
 	PrintTypeInfo(elmtype);
+	PrintQualifier(typeInfo);
 	llvm::outs() << "}";
       }
     }
@@ -822,6 +822,8 @@ public:
   }
   
   std::string checkPointkey() {
+    return "";
+    /*
     std::string result;
     if (firsttype == 1) {
       return "";
@@ -834,6 +836,7 @@ public:
     }
     pointflag = 0;
     return result;
+    */
   }
 
   void PrintQualifier(QualType Qual) {
