@@ -1426,7 +1426,8 @@ public:
       cast.clear();
     }
     castflag = 0;
-    return true;
+    TraverseStmt(cscast->getSubExpr());
+    return false;
   }
 
   // DeclRefExpr(DRE)
@@ -1924,6 +1925,8 @@ public:
 
   // ImplicitCastの有無
   void checkCast() {
+    if (labelflag != 0)
+      llvm::outs() << "labelflag != 0 in checkCast";
     while (!ct.empty()) {
       llvm::outs() << " " << ct.top();
       ct.pop();
