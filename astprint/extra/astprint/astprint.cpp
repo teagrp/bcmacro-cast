@@ -406,528 +406,404 @@ public:
   }
  
   
-  // :typeの情報を出力
-  void PrintTypeInfo(QualType typeInfo) {
-    firsttype++;
+  void PrintAutoTypeInfo(QualType typeInfo) {
+    assert(labelflag == 0);
+    if (castflag != 0) {
+      cast << " :Auto \"true\"";
+      PrintQualifier(typeInfo);
+      PrintTypeInfo(dyn_cast<AutoType>(typeInfo)->getDeducedType());
+      castlabel += cast.str();
+      cast.str("");
+      cast.clear();
+    } else {
+      llvm::outs() << " :Auto \"true\"";
+      PrintQualifier(typeInfo);
+      PrintTypeInfo(dyn_cast<AutoType>(typeInfo)->getDeducedType());
+    }
+  }
+
+  void PrintTypedefTypeInfo(QualType typeInfo) {
+    TypedefNameDecl *TDtype = dyn_cast<TypedefType>(typeInfo)->getDecl();
+    assert(labelflag == 0);
+    if (castflag != 0) {
+      cast << checkPointkey() 
+	   << "{:kind \"Typedef-type\"" 
+	   << " :typename " << "\"" << (std::string)TDtype->getName() << "\""
+	   << " :typedeftype ";
+      PrintTypeInfo(TDtype->getUnderlyingType());
+      PrintQualifier(typeInfo);
+      cast << "}";
+      castlabel += cast.str();
+      cast.str("");
+      cast.clear();
+    } else {
+      llvm::outs() << checkPointkey() 
+		   << "{:kind \"Typedef-type\"" 
+		   << " :typename " << "\"" << TDtype->getName() << "\""
+		   << " :typedeftype ";
+      PrintTypeInfo(TDtype->getUnderlyingType());
+      PrintQualifier(typeInfo);
+      llvm::outs() << "}";
+    }
+  }
+
+  void PrintBuiltinTypeInfo(QualType typeInfo) {
     std::string Typename;
-    int flag = 0; // Unknwonの判定用
-    if (dyn_cast<AutoType>(typeInfo)) {//c++{11/14}専用みたい...
-      flag = 1;
-      if (labelflag != 0) {
-	os << " :Auto \"true\"";
-	PrintQualifier(typeInfo);
-	PrintTypeInfo(dyn_cast<AutoType>(typeInfo)->getDeducedType());
-	caselabel += os.str();
-	os.str("");
-	os.clear();
-      } else if (castflag != 0) {
-	cast << " :Auto \"true\"";
-	PrintQualifier(typeInfo);
-	PrintTypeInfo(dyn_cast<AutoType>(typeInfo)->getDeducedType());
-	castlabel += cast.str();
-	cast.str("");
-	cast.clear();
-      } else {
-	llvm::outs() << " :Auto \"true\"";
-	PrintQualifier(typeInfo);
-	PrintTypeInfo(dyn_cast<AutoType>(typeInfo)->getDeducedType());
-      }
+    switch (dyn_cast<BuiltinType>(typeInfo)->getKind()) {
+    case BuiltinType::Void:
+      Typename = "Void";
+      break;
+    case BuiltinType::Bool:
+      Typename = "Bool";
+      break;
+    case BuiltinType::UChar:
+      Typename = "UnsignedChar";
+      break;
+    case BuiltinType::UShort:
+      Typename = "UnsignedShort";
+      break;
+    case BuiltinType::UInt:
+      Typename = "UnsignedInt";
+      break;
+    case BuiltinType::ULong:
+      Typename = "UnsignedLong";
+      break;
+    case BuiltinType::ULongLong:
+      Typename = "UnsigndLongLong";
+      break;
+    case BuiltinType::Char_S:
+      Typename = "Char";
+      break;
+    case BuiltinType::SChar:
+      Typename = "SignedChar";
+      break;
+    case BuiltinType::Short:
+      Typename = "Short";
+      break;
+    case BuiltinType::Int:
+      Typename = "Int";
+      break;
+    case BuiltinType::Long:
+      Typename = "Long";
+      break;
+    case BuiltinType::LongLong:
+      Typename = "LongLong";
+      break;
+    case BuiltinType::Float:
+      Typename = "Float";
+      break;
+    case BuiltinType::Double:
+      Typename = "Double";
+      break;
+    case BuiltinType::LongDouble:
+      Typename = "LongDouble";
+      break;
+      //以下c++に関するもの
+    case BuiltinType::WChar_S:
+    case BuiltinType::WChar_U:
+      Typename = "WChar_t";
+      break;
+    case BuiltinType::Dependent:
+      Typename = "Dependent";
+      break;
+    default:
+      Typename = "UnKnownError";
+      llvm::outs() << "\n \""<< typeInfo.getAsString() << "\"は, 初出です."
+		   << " astprint.cppのPrintTypeInfoにcaseを追加して下さい.";
+      break;
     }
-    if (dyn_cast<TypedefType>(typeInfo)) {
-      flag = 1;
-      TypedefNameDecl *TDtype = dyn_cast<TypedefType>(typeInfo)->getDecl();
-      if (labelflag != 0) {
-	os << checkPointkey() 
-	   << "{:kind \"Typedef-type\"" 
-	   << " :typename " << "\"" << (std::string)TDtype->getName() << "\"";
-	PrintQualifier(typeInfo);
-	os << " :typedeftype ";
-	PrintTypeInfo(TDtype->getUnderlyingType());
-	os << "}";
-	caselabel += os.str();
-	os.str("");
-	os.clear();
-      } else if (castflag != 0) {
-	cast << checkPointkey() 
-	   << "{:kind \"Typedef-type\"" 
-	   << " :typename " << "\"" << (std::string)TDtype->getName() << "\"";
-	PrintQualifier(typeInfo);
-	cast << " :typedeftype ";
-	PrintTypeInfo(TDtype->getUnderlyingType());
-	cast << "}";
-	castlabel += cast.str();
-	cast.str("");
-	cast.clear();
-      } else {
-	llvm::outs() << checkPointkey() 
-		     << "{:kind \"Typedef-type\"" 
-		     << " :typename " << "\"" << TDtype->getName() << "\"";
-	PrintQualifier(typeInfo);
-	llvm::outs() << " :typedeftype ";
-	PrintTypeInfo(TDtype->getUnderlyingType());
-	llvm::outs() << "}";
-      }
-    }
-    if (dyn_cast<BuiltinType>(typeInfo)) {
-      flag = 1;
-      switch (dyn_cast<BuiltinType>(typeInfo)->getKind()) {
-      case BuiltinType::Void:
-	Typename = "Void";
-	break;
-      case BuiltinType::Bool:
-	Typename = "Bool";
-	break;
-      case BuiltinType::UChar:
-	Typename = "UnsignedChar";
-	break;
-      case BuiltinType::UShort:
-	Typename = "UnsignedShort";
-	break;
-      case BuiltinType::UInt:
-	Typename = "UnsignedInt";
-	break;
-      case BuiltinType::ULong:
-	Typename = "UnsignedLong";
-	break;
-      case BuiltinType::ULongLong:
-	Typename = "UnsigndLongLong";
-	break;
-      case BuiltinType::Char_S:
-	Typename = "Char";
-	break;
-      case BuiltinType::SChar:
-	Typename = "SignedChar";
-	break;
-      case BuiltinType::Short:
-	Typename = "Short";
-	break;
-      case BuiltinType::Int:
-	Typename = "Int";
-	break;
-      case BuiltinType::Long:
-	Typename = "Long";
-	break;
-      case BuiltinType::LongLong:
-	Typename = "LongLong";
-	break;
-      case BuiltinType::Float:
-	Typename = "Float";
-	break;
-      case BuiltinType::Double:
-	Typename = "Double";
-	break;
-      case BuiltinType::LongDouble:
-	Typename = "LongDouble";
-	break;
-	//以下c++に関するもの
-      case BuiltinType::WChar_S:
-      case BuiltinType::WChar_U:
-	Typename = "WChar_t";
-	break;
-      case BuiltinType::Dependent:
-	Typename = "Dependent";
-	break;
-      default:
-	Typename = "UnKnownError";
-	llvm::outs() << "\n \""<< typeInfo.getAsString() << "\"は, 初出です."
-		     << " astprint.cppのPrintTypeInfoにcaseを追加して下さい.";
-	break;
-      }
-      if (labelflag != 0) {
-	os << checkPointkey()
+    assert(labelflag == 0);
+    if (castflag != 0) {
+      cast << checkPointkey()
 	   << "{:kind \"" << Typename << "-type\"";
-	PrintQualifier(typeInfo);
-	os << "}";
-	caselabel += os.str();
-	os.str("");
-	os.clear();
-      } else if (castflag != 0) {
+      PrintQualifier(typeInfo);
+      cast << "}";
+      castlabel += cast.str();
+      cast.str("");
+      cast.clear();
+    } else {
+      llvm::outs() << checkPointkey()
+		   << "{:kind \"" << Typename << "-type\"";
+      PrintQualifier(typeInfo);
+      llvm::outs() << "}";
+    }
+  }
+
+  void PrintFunctionTypeInfo(QualType typeInfo) {
+    assert(labelflag == 0);
+    if (castflag != 0) {
+      cast <<  checkPointkey()
+	   << "{:kind \"Func-type\""
+	   << " :ParmsType [";
+      if (dyn_cast<FunctionProtoType>(typeInfo)) {
+	unsigned parms = dyn_cast<FunctionProtoType>(typeInfo)->getNumArgs();
+	if (parms != 0) {
+	  unsigned i = 0;
+	  while (i < parms) {
+	    firsttype = 0;
+	    if (i != 0) {
+	      cast << " ";
+	    }
+	    PrintTypeInfo(dyn_cast<FunctionProtoType>(typeInfo)->getArgType(i));
+	    i++;
+	  }
+	}
+      }
+      cast << "]";
+      if (dyn_cast<FunctionType>(typeInfo)) {
+	cast << " :RetType ";
+	QualType rettype = dyn_cast<FunctionType>(typeInfo)->getResultType();
+	firsttype = 0;
+	PrintTypeInfo(rettype);
+      } 
+      cast << "}";
+      castlabel += cast.str();
+      cast.str("");
+      cast.clear();
+    } else {
+      llvm::outs() <<  checkPointkey()
+		   << "{:kind \"Func-type\""
+		   << " :ParmsType [";
+      if (dyn_cast<FunctionProtoType>(typeInfo)) {
+	unsigned parms = dyn_cast<FunctionProtoType>(typeInfo)->getNumArgs();
+	if (parms != 0) {
+	  unsigned i = 0;
+	  while (i < parms) {
+	    firsttype = 0;
+	    if (i != 0) {
+	      llvm::outs() << " ";
+	    }
+	    PrintTypeInfo(dyn_cast<FunctionProtoType>(typeInfo)->getArgType(i));
+	    i++;
+	  }
+	}
+      }
+      llvm::outs() << "]";
+      if (dyn_cast<FunctionType>(typeInfo)) {
+	llvm::outs() << " :RetType ";
+	QualType rettype = dyn_cast<FunctionType>(typeInfo)->getResultType();
+	firsttype = 0;
+	PrintTypeInfo(rettype);
+      } 
+      llvm::outs() << "}";
+    }
+  }
+
+  void PrintArrayTypeInfo(QualType typeInfo) {
+    QualType elmtype;
+    if (dyn_cast<ArrayType>(typeInfo)) {
+      elmtype = dyn_cast<ArrayType>(typeInfo)->getElementType();
+      assert(labelflag == 0);
+      if (castflag != 0) {
 	cast << checkPointkey()
-	   << "{:kind \"" << Typename << "-type\"";
+	     << "{:kind \"Array-type\"";		   
+	if (dyn_cast<ConstantArrayType>(typeInfo)) {
+	  cast << " :Arraysize \"" 
+	       << dyn_cast<ConstantArrayType>(typeInfo)->getSize().toString(10, true) << "\"";
+	}
+	if (dyn_cast<VariableArrayType>(typeInfo)) {
+	  Expr *vaexpr = dyn_cast<VariableArrayType>(typeInfo)->getSizeExpr();
+	  cast << " :ArraySizeExpression ";
+	  linefeedflag = 0;
+	  TraverseStmt(vaexpr);
+	}
 	PrintQualifier(typeInfo);
-	cast << "}";
+	cast << " :type [";
+	PrintTypeInfo(elmtype);
+	cast << "]}";
 	castlabel += cast.str();
 	cast.str("");
 	cast.clear();
       } else {
 	llvm::outs() << checkPointkey()
-		     << "{:kind \"" << Typename << "-type\"";
+		     << "{:kind \"Array-type\"";		   
+	if (dyn_cast<ConstantArrayType>(typeInfo)) {
+	  llvm::outs() << " :ArraySize \"" 
+		       << dyn_cast<ConstantArrayType>(typeInfo)->getSize() << "\"";
+	}
+	if (dyn_cast<VariableArrayType>(typeInfo)) {
+	  Expr *vaexpr = dyn_cast<VariableArrayType>(typeInfo)->getSizeExpr();
+	  llvm::outs() << " :ArraySizeExpression ";
+	  linefeedflag = 0;
+	  TraverseStmt(vaexpr);
+	}
 	PrintQualifier(typeInfo);
-	llvm::outs() << "}";
+	llvm::outs() << " :type [";
+	PrintTypeInfo(elmtype);
+	llvm::outs() << "]}";
       }
+    } else if (dyn_cast<ParenType>(typeInfo)) {
+      elmtype = dyn_cast<ParenType>(typeInfo)->getInnerType();
+      PrintTypeInfo(elmtype);
     }
-    if (typeInfo->isFunctionType()) {
-      flag = 1;
-      if (labelflag != 0) {
-	os <<  checkPointkey()
-	   << "{:kind \"Func-type\""
-	   << " :ParmsType [";
-	if (dyn_cast<FunctionProtoType>(typeInfo)) {
-	  unsigned parms = dyn_cast<FunctionProtoType>(typeInfo)->getNumArgs();
-	  if (parms != 0) {
-	    unsigned i = 0;
-	    while (i < parms) {
-	      firsttype = 0;
-	      if (i != 0) {
-		os << " ";
-	      }
-	      PrintTypeInfo(dyn_cast<FunctionProtoType>(typeInfo)->getArgType(i));
-	      i++;
-	    }
-	  }
-	}
-	os << "]";
-	if (dyn_cast<FunctionType>(typeInfo)) {
-	  os << " :RetType ";
-	  QualType rettype = dyn_cast<FunctionType>(typeInfo)->getResultType();
-	  firsttype = 0;
-	  PrintTypeInfo(rettype);
-	} 
-	os << "}";
-	caselabel += os.str();
-	os.str("");
-	os.clear();
-      } else if (castflag != 0) {
-	cast <<  checkPointkey()
-	     << "{:kind \"Func-type\""
-	     << " :ParmsType [";
-	if (dyn_cast<FunctionProtoType>(typeInfo)) {
-	  unsigned parms = dyn_cast<FunctionProtoType>(typeInfo)->getNumArgs();
-	  if (parms != 0) {
-	    unsigned i = 0;
-	    while (i < parms) {
-	      firsttype = 0;
-	      if (i != 0) {
-		cast << " ";
-	      }
-	      PrintTypeInfo(dyn_cast<FunctionProtoType>(typeInfo)->getArgType(i));
-	      i++;
-	    }
-	  }
-	}
-	cast << "]";
-	if (dyn_cast<FunctionType>(typeInfo)) {
-	  cast << " :RetType ";
-	  QualType rettype = dyn_cast<FunctionType>(typeInfo)->getResultType();
-	  firsttype = 0;
-	  PrintTypeInfo(rettype);
-	} 
+  }
+
+  void PrintPointerTypeInfo(QualType typeInfo) {
+    if (dyn_cast<PointerType>(typeInfo)) {
+      std::string key = checkPointkey();
+      pointflag = 1;
+      QualType elmtype = dyn_cast<PointerType>(typeInfo)->getPointeeType();
+      assert(labelflag == 0);
+      if (castflag != 0) {
+	cast << key
+	     << "{:kind \"Pointer-type\"";
+	PrintQualifier(typeInfo);
+	PrintTypeInfo(elmtype);
 	cast << "}";
 	castlabel += cast.str();
 	cast.str("");
 	cast.clear();
       } else {
-	llvm::outs() <<  checkPointkey()
-		     << "{:kind \"Func-type\""
-		     << " :ParmsType [";
-	if (dyn_cast<FunctionProtoType>(typeInfo)) {
-	  unsigned parms = dyn_cast<FunctionProtoType>(typeInfo)->getNumArgs();
-	  if (parms != 0) {
-	    unsigned i = 0;
-	    while (i < parms) {
-	      firsttype = 0;
-	      if (i != 0) {
-		llvm::outs() << " ";
-	      }
-	      PrintTypeInfo(dyn_cast<FunctionProtoType>(typeInfo)->getArgType(i));
-	      i++;
-	    }
-	  }
-	}
-	llvm::outs() << "]";
-	if (dyn_cast<FunctionType>(typeInfo)) {
-	  llvm::outs() << " :RetType ";
-	  QualType rettype = dyn_cast<FunctionType>(typeInfo)->getResultType();
-	  firsttype = 0;
-	  PrintTypeInfo(rettype);
-	} 
+	llvm::outs() << key
+		     << "{:kind \"Pointer-type\"";
+	PrintQualifier(typeInfo);
+	PrintTypeInfo(elmtype);
 	llvm::outs() << "}";
       }
     }
-    if (typeInfo->isArrayType()) {
-      flag = 1;
-      QualType elmtype;
-      if (dyn_cast<ArrayType>(typeInfo)) {
-	elmtype = dyn_cast<ArrayType>(typeInfo)->getElementType();
-	if (labelflag != 0) {
-	  os << checkPointkey()
-	     << "{:kind \"Array-type\"";		   
-	  if (dyn_cast<ConstantArrayType>(typeInfo)) {
-	    os << " :Arraysize \"" 
-	       << dyn_cast<ConstantArrayType>(typeInfo)->getSize().toString(10, true) << "\"";
-	  }
-	  if (dyn_cast<VariableArrayType>(typeInfo)) {
-	    Expr *vaexpr = dyn_cast<VariableArrayType>(typeInfo)->getSizeExpr();
-	    os << " :ArraySizeExpression ";
-	    linefeedflag = 0;
-	    TraverseStmt(vaexpr);
-	  }
-	  PrintQualifier(typeInfo);
-	  os << " :type [";
-	  PrintTypeInfo(elmtype);
-	  os << "]}";
-	  caselabel += os.str();
-	  os.str("");
-	  os.clear();
-	} else if (castflag != 0) {
-	  cast << checkPointkey()
-	     << "{:kind \"Array-type\"";		   
-	  if (dyn_cast<ConstantArrayType>(typeInfo)) {
-	    cast << " :Arraysize \"" 
-	       << dyn_cast<ConstantArrayType>(typeInfo)->getSize().toString(10, true) << "\"";
-	  }
-	  if (dyn_cast<VariableArrayType>(typeInfo)) {
-	    Expr *vaexpr = dyn_cast<VariableArrayType>(typeInfo)->getSizeExpr();
-	    cast << " :ArraySizeExpression ";
-	    linefeedflag = 0;
-	    TraverseStmt(vaexpr);
-	  }
-	  PrintQualifier(typeInfo);
-	  cast << " :type [";
-	  PrintTypeInfo(elmtype);
-	  cast << "]}";
-	  castlabel += cast.str();
-	  cast.str("");
-	  cast.clear();
-	} else {
-	  llvm::outs() << checkPointkey()
-		       << "{:kind \"Array-type\"";		   
-	  if (dyn_cast<ConstantArrayType>(typeInfo)) {
-	    llvm::outs() << " :ArraySize \"" 
-			 << dyn_cast<ConstantArrayType>(typeInfo)->getSize() << "\"";
-	  }
-	  if (dyn_cast<VariableArrayType>(typeInfo)) {
-	    Expr *vaexpr = dyn_cast<VariableArrayType>(typeInfo)->getSizeExpr();
-	    llvm::outs() << " :ArraySizeExpression ";
-	    linefeedflag = 0;
-	    TraverseStmt(vaexpr);
-	  }
-	  PrintQualifier(typeInfo);
-	  llvm::outs() << " :type [";
-	  PrintTypeInfo(elmtype);
-	  llvm::outs() << "]}";
-	}
-      }
-      if (dyn_cast<ParenType>(typeInfo)) {
-	elmtype = dyn_cast<ParenType>(typeInfo)->getInnerType();
-	PrintTypeInfo(elmtype);
-      }
-    }
-    if (typeInfo->isPointerType()) {
-      flag = 1;
-      if (dyn_cast<PointerType>(typeInfo)) {
-	std::string key = checkPointkey();
-	pointflag = 1;
-	QualType elmtype = dyn_cast<PointerType>(typeInfo)->getPointeeType();
-	if (labelflag != 0) {
-	  os << key
-	     << "{:kind \"Pointer-type\"";
-	  PrintQualifier(typeInfo);
-	  PrintTypeInfo(elmtype);
-	  os << "}";
-	  caselabel += os.str();
-	  os.str("");
-	  os.clear();
-	} else if (castflag != 0) {
-	  cast << key
-	     << "{:kind \"Pointer-type\"";
-	  PrintQualifier(typeInfo);
-	  PrintTypeInfo(elmtype);
-	  cast << "}";
-	  castlabel += cast.str();
-	  cast.str("");
-	  cast.clear();
-	} else {
-	  llvm::outs() << key
-		       << "{:kind \"Pointer-type\"";
-	  PrintQualifier(typeInfo);
-	  PrintTypeInfo(elmtype);
-	  llvm::outs() << "}";
-	}
-      }
-    }
-    if (typeInfo->isStructureType()) {
-      flag = 1;
-      if (labelflag != 0) {
-	if (dyn_cast<ElaboratedType>(typeInfo)) {
-	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  PrintTypeInfo(etype);
-	} 
-	if (dyn_cast<RecordType>(typeInfo)) {
-	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	  os << checkPointkey()
+  }
+
+  void PrintStructureTypeInfo(QualType typeInfo) {
+    assert(labelflag == 0);
+    if (castflag != 0) {
+      if (dyn_cast<ElaboratedType>(typeInfo)) {
+	QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	PrintTypeInfo(etype);
+      } 
+      if (dyn_cast<RecordType>(typeInfo)) {
+	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	cast << checkPointkey()
 	     << "{:kind \"Structure-type\"";
-	  PrintQualifier(typeInfo);
-	  os << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
-	  if (rdecl->getName() == "") {
-	    os << "\n :member[";
-	    linefeedflag = 0;
-	    if (!(rdecl->field_empty())) {
-	      RecordDecl::field_iterator itr = rdecl->field_begin();
-	      while (itr != rdecl->field_end()) {
-		TraverseDecl(itr->getCanonicalDecl());
-		itr++;
-	      } 
-	    }
-	    os << "]";
+	PrintQualifier(typeInfo);
+	cast << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
+	if (rdecl->getName() == "") {
+	  cast << "\n :member[";
+	  linefeedflag = 0;
+	  if (!(rdecl->field_empty())) {
+	    RecordDecl::field_iterator itr = rdecl->field_begin();
+	    while (itr != rdecl->field_end()) {
+	      TraverseDecl(itr->getCanonicalDecl());
+	      itr++;
+	    } 
 	  }
-	  os << "}";
+	  cast << "]";
 	}
-	caselabel += os.str();
-	os.str("");
-	os.clear();
-      } else if (castflag != 0) {
-	if (dyn_cast<ElaboratedType>(typeInfo)) {
-	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  PrintTypeInfo(etype);
-	} 
-	if (dyn_cast<RecordType>(typeInfo)) {
-	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	  cast << checkPointkey()
-	     << "{:kind \"Structure-type\"";
-	  PrintQualifier(typeInfo);
-	  cast << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
-	  if (rdecl->getName() == "") {
-	    cast << "\n :member[";
-	    linefeedflag = 0;
-	    if (!(rdecl->field_empty())) {
-	      RecordDecl::field_iterator itr = rdecl->field_begin();
-	      while (itr != rdecl->field_end()) {
-		TraverseDecl(itr->getCanonicalDecl());
-		itr++;
-	      } 
-	    }
-	    cast << "]";
-	  }
-	  cast << "}";
+	cast << "}";
+      }
+      castlabel += cast.str();
+      cast.str("");
+      cast.clear();
+    } else {
+      if (dyn_cast<ElaboratedType>(typeInfo)) {
+	QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	if (firsttype == 1) { 
+	  firsttype = 0;
 	}
-	castlabel += cast.str();
-	cast.str("");
-	cast.clear();
-      } else {
-	if (dyn_cast<ElaboratedType>(typeInfo)) {
-	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  if (firsttype == 1) { 
-	    firsttype = 0;
+	PrintTypeInfo(etype);
+      } 
+      if (dyn_cast<RecordType>(typeInfo)) {
+	llvm::outs() << checkPointkey()
+		     << "{:kind \"Structure-type\"";
+	PrintQualifier(typeInfo);
+	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";  
+	if (rdecl->getName() == "") {
+	  llvm::outs() << "\n :member[";
+	  linefeedflag = 0;
+	  if (!(rdecl->field_empty())) {
+	    RecordDecl::field_iterator itr = rdecl->field_begin();
+	    while (itr != rdecl->field_end()) {
+	      TraverseDecl(itr->getCanonicalDecl());
+	      itr++;
+	    } 
 	  }
-	  PrintTypeInfo(etype);
-	} 
-	if (dyn_cast<RecordType>(typeInfo)) {
-	  llvm::outs() << checkPointkey()
-		       << "{:kind \"Structure-type\"";
-	  PrintQualifier(typeInfo);
-	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	  llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";  
-	  if (rdecl->getName() == "") {
-	    llvm::outs() << "\n :member[";
-	    linefeedflag = 0;
-	    if (!(rdecl->field_empty())) {
-	      RecordDecl::field_iterator itr = rdecl->field_begin();
-	      while (itr != rdecl->field_end()) {
-		TraverseDecl(itr->getCanonicalDecl());
-		itr++;
-	      } 
-	    }
-	    llvm::outs() << "]";
-	  }
-	  llvm::outs() << "}";
+	  llvm::outs() << "]";
 	}
+	llvm::outs() << "}";
       }
     }
-    if (typeInfo->isUnionType()) {
-      flag = 1;
-      if (labelflag != 0) {
-	if (dyn_cast<ElaboratedType>(typeInfo)) {
-	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  PrintTypeInfo(etype);
-	} 
-	if (dyn_cast<RecordType>(typeInfo)) {
-	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	  os << checkPointkey()
+  }
+
+  void PrintUnionTypeInfo(QualType typeInfo) {
+    if (castflag != 0) {
+      if (dyn_cast<ElaboratedType>(typeInfo)) {
+	QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	PrintTypeInfo(etype);
+      } 
+      if (dyn_cast<RecordType>(typeInfo)) {
+	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	cast << checkPointkey()
 	     << "{:kind \"Union-type\"";
-	  PrintQualifier(typeInfo);
-	  os << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
-	  if (rdecl->getName() == "") {
-	    os << "\n :member[";
-	    linefeedflag = 0;
-	    if (!(rdecl->field_empty())) {
-	      RecordDecl::field_iterator itr = rdecl->field_begin();
-	      while (itr != rdecl->field_end()) {
-		TraverseDecl(itr->getCanonicalDecl());
-		itr++;
-	      } 
-	    }
-	    os << "]";
+	PrintQualifier(typeInfo);
+	cast << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
+	if (rdecl->getName() == "") {
+	  cast << "\n :member[";
+	  linefeedflag = 0;
+	  if (!(rdecl->field_empty())) {
+	    RecordDecl::field_iterator itr = rdecl->field_begin();
+	    while (itr != rdecl->field_end()) {
+	      TraverseDecl(itr->getCanonicalDecl());
+	      itr++;
+	    } 
 	  }
-	  os << "}";
+	  cast << "]";
 	}
-	caselabel += os.str();
-	os.str("");
-	os.clear();
-      } else if (castflag != 0) {
-	if (dyn_cast<ElaboratedType>(typeInfo)) {
-	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  PrintTypeInfo(etype);
-	} 
-	if (dyn_cast<RecordType>(typeInfo)) {
-	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	  cast << checkPointkey()
-	       << "{:kind \"Union-type\"";
-	  PrintQualifier(typeInfo);
-	  cast << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
-	  if (rdecl->getName() == "") {
-	    cast << "\n :member[";
-	    linefeedflag = 0;
-	    if (!(rdecl->field_empty())) {
-	      RecordDecl::field_iterator itr = rdecl->field_begin();
-	      while (itr != rdecl->field_end()) {
-		TraverseDecl(itr->getCanonicalDecl());
-		itr++;
-	      } 
-	    }
-	    cast << "]";
+	cast << "}";
+      }
+      castlabel += cast.str();
+      cast.str("");
+      cast.clear();
+    } else {
+      if (dyn_cast<ElaboratedType>(typeInfo)) {
+	QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
+	PrintTypeInfo(etype);
+      } 
+      if (dyn_cast<RecordType>(typeInfo)) {
+	RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
+	llvm::outs() << checkPointkey()
+		     << "{:kind \"Union-type\"";
+	PrintQualifier(typeInfo);
+	llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";
+	if (rdecl->getName() == "") {
+	  llvm::outs() << "\n :member [";
+	  linefeedflag = 0;
+	  if (!(rdecl->field_empty())) {
+	    RecordDecl::field_iterator itr = rdecl->field_begin();
+	    while (itr != rdecl->field_end()) {
+	      TraverseDecl(itr->getCanonicalDecl());
+	      itr++;
+	    } 
 	  }
-	  cast << "}";
+	  llvm::outs() << "]";
 	}
-	castlabel += cast.str();
-	cast.str("");
-	cast.clear();
-      } else {
-	if (dyn_cast<ElaboratedType>(typeInfo)) {
-	  QualType etype = dyn_cast<ElaboratedType>(typeInfo)->getNamedType();
-	  PrintTypeInfo(etype);
-	} 
-	if (dyn_cast<RecordType>(typeInfo)) {
-	  RecordDecl *rdecl = dyn_cast<RecordType>(typeInfo)->getDecl();
-	  llvm::outs() << checkPointkey()
-		       << "{:kind \"Union-type\"";
-	  PrintQualifier(typeInfo);
-	  llvm::outs() << " :name" << " \"" << rdecl->getName() << "\"";
-	  if (rdecl->getName() == "") {
-	    llvm::outs() << "\n :member [";
-	    linefeedflag = 0;
-	    if (!(rdecl->field_empty())) {
-	      RecordDecl::field_iterator itr = rdecl->field_begin();
-	      while (itr != rdecl->field_end()) {
-		TraverseDecl(itr->getCanonicalDecl());
-		itr++;
-	      } 
-	    }
-	    llvm::outs() << "]";
-	  }
-	  llvm::outs() << "}";
-	}
+	llvm::outs() << "}";
       }
     }
-    if (flag == 0) {
-      if (labelflag != 0) {
-	os << checkPointkey()
-	   << "{:kind \"Unknown-type\""
-	   << " :typeString " << "\"" << typeInfo.getAsString() << "\"}";
-	caselabel += os.str();
-	os.str("");
-	os.clear();
-      } else if (castflag != 0) {
+  }
+
+  // :typeの情報を出力
+  void PrintTypeInfo(QualType typeInfo) {
+    //llvm::outs() << "(";
+    firsttype++;
+    if (dyn_cast<AutoType>(typeInfo))
+      PrintAutoTypeInfo(typeInfo);
+    else if (dyn_cast<TypedefType>(typeInfo))
+      PrintTypedefTypeInfo(typeInfo);
+    else if (dyn_cast<BuiltinType>(typeInfo))
+      PrintBuiltinTypeInfo(typeInfo);
+    else if (typeInfo->isFunctionType())
+      PrintFunctionTypeInfo(typeInfo);
+    else if (typeInfo->isArrayType()) 
+      PrintArrayTypeInfo(typeInfo);
+    else if (typeInfo->isPointerType())
+      PrintPointerTypeInfo(typeInfo);
+    else if (typeInfo->isStructureType())
+      PrintStructureTypeInfo(typeInfo);
+    else if (typeInfo->isUnionType()) 
+      PrintUnionTypeInfo(typeInfo);
+    else {
+      assert(labelflag == 0);
+      if (castflag != 0) {
 	cast << checkPointkey()
 	   << "{:kind \"Unknown-type\""
 	   << " :typeString " << "\"" << typeInfo.getAsString() << "\"}";
@@ -941,6 +817,7 @@ public:
       }
     }
     firsttype = 0;
+    //llvm::outs() << "\"" << typeInfo.getAsString() << "\")";
     //llvm::outs()  << " " << typeInfo->getTypeClassName();
   }
   
