@@ -653,7 +653,10 @@ public:
 	cast << "{:kind \"Structure-type\"";
 	PrintQualifier(typeInfo);
 	cast << " :name" << " \"" << (std::string)rdecl->getName() << "\"";
-	if (rdecl->getName() == "") {
+	/* FIXME: Output members of anonymous struct while taking
+	 *        cast into account. Disable this function for the time being.
+	 */
+	if (false && rdecl->getName() == "") {
 	  cast << "\n :member[";
 	  linefeedflag = 0;
 	  if (!(rdecl->field_empty())) {
