@@ -20,15 +20,19 @@ do
     echo "$r line " `wc -l $rule | awk '{print $1}'`
     echo "$r rules " `grep defrule $rule| wc -l`
     if grep nest $rule > /dev/null; then
-
-	echo "$r nest 1"
-        sed -e 's/#nest/#nest #use/g' $rule > $TMPRULE
-	echo "$r nesttraverse " `$ASTGREP $TMPRULE $TARGET | wc -l`
+	if [ -f $RULEDIR/$r/$r-nest.clj ]; then
+	    echo "$r nest 2"
+	    echo "$r nesttraverse " `$ASTGREP $RULEDIR/$r/$r-nest.clj $TARGET | wc -l`
+	else
+	    echo "$r nest 1"
+            sed -e 's/#nest/#nest #use/g' $rule > $TMPRULE
+	    echo "$r nesttraverse " `$ASTGREP $TMPRULE $TARGET | wc -l`
+	fi
     else
 	echo "$r nest 0"
 	echo "$r nesttraverse 0"
     fi
-    /usr/bin/time -f "$r time %U" $ASTGREP $rule $TARGET
+    /usr/bin/time -f "$r time %U" sh -c "$ASTGREP $rule $TARGET > /dev/null" 2>&1
 
     rm -f $TMPRULE
 done
