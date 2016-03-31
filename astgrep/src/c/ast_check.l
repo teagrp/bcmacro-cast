@@ -30,7 +30,7 @@ digit           [0-9]
                   return KEYWORD;
                 }
 
-\"(\\|\\\"|[^\"])*\" {
+\"([^\\"]|\\.)*\" {
                   yylval.s = strdup(yytext);
                   // printf("STR %s\n", yytext);
                   return STRING;
